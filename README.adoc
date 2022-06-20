@@ -1,0 +1,44 @@
+:title: Voxel Carving of 3D Surfaces using AR Markers for Pose Estimation
+:description: Testcases for GAD exercises
+:keywords: cpp, tum, voxel, voxel carving
+:authors: Maximilian Anzinger <maximilian.anzinger@tum.de>; Alexander Fuchs <fuchsale@in.tum.de>; Georg Henning <georgm.henning@tum.de>; Nils Keunecke <nils.keunecke@tum.de>;
+:revremark:
+:showtitle:
+:sectnums:
+:toc: preamble
+:toclevels: 3
+:icons: font
+
+= {title}
+
+Final project for "3D Scanning and Motion Capture" class in SS2022 at Technical University of Munich.
+
+== Setup
+
+Install Eigen.
+
+Install https://docs.opencv.org/3.4/d3/d52/tutorial_windows_install.html[OpenCV Library] (Visual Studio 2019 VC16).
+
+Add `"\Libs\install\opencv\bin"`` to path.
+
+.Folder Structure
+
+* voxel_project
+** Build
+** Data
+* Libs
+** Eigen3
+** opencv
+** install
+*** opencv
+** opencv_contrib
+
+
+== Abstract
+`TODO`
+
+== Example
+`TODO`
+
+== References
+`TODO`
