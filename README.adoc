@@ -26,6 +26,8 @@ Add `"\Libs\install\opencv\bin"`` to path.
 * voxel_project
 ** Build
 ** Data
+*** calib_00.jpg
+*** calib_01.jpg...
 * Libs
 ** Eigen3
 ** opencv
@@ -33,6 +35,8 @@ Add `"\Libs\install\opencv\bin"`` to path.
 *** opencv
 ** opencv_contrib
 
+
+Command Line Arguments: -w=5 -h=7 -sl=0.04 -ml=0.02 -d=10 -v="../Data/calib_%02d.jpg" myoutfile
 
 == Abstract
 `TODO`
