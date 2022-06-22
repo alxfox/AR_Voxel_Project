@@ -5,14 +5,16 @@ set(CMAKE_CONFIGURATION_TYPES Debug Release CACHE TYPE INTERNAL FORCE)
 project(voxel_project)
 
 # Options
-set(LIBRARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../Libs CACHE PATH "Path to lib folder")
+set(LIBRARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Libs CACHE PATH "Path to lib folder")
 set(Eigen3_DIR ${LIBRARY_DIR}/Eigen/share/eigen3/cmake CACHE PATH "Path to installed Eigen")
 set(OpenCV_DIR ${LIBRARY_DIR}/install/opencv CACHE PATH "Path to installed OpenCV")
+
 # Set C++ flags
 set(CMAKE_CXX_STANDARD 17)
 
 find_package(Eigen3 REQUIRED)
 find_package(OpenCV REQUIRED)
+
 # Define header and source files
 set(HEADERS
     src/Calibration.h

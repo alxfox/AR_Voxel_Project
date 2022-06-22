@@ -9,6 +9,10 @@
 :toclevels: 3
 :icons: font
 
+:cmake_version: 3.9.1
+:git-bash_version: 2.14.1
+:opencv_version: 0.0
+
 = {title}
 
 Final project for "3D Scanning and Motion Capture" class in SS2022 at Technical University of Munich.
@@ -20,6 +24,88 @@ Install Eigen.
 Install https://docs.opencv.org/3.4/d3/d52/tutorial_windows_install.html[OpenCV Library] (Visual Studio 2019 VC16).
 
 Add `"\Libs\install\opencv\bin"`` to path.
+
+=== Windows
+
+==== CMake
+image:https://img.shields.io/badge/CMake-{cmake_version}+-brightgreen[CMake Version]
+
+. Download https://cmake.org/download/[`CMake`] ({cmake_version} or newer)
+. Install `CMake` in your prefered directory.
+. Add `CMake` to `PATH` variable.
+
+==== Git BASH
+image:https://img.shields.io/badge/Git BASH-{git-bash_version}+-brightgreen[Git BASH Version]
+
+. Download and install https://gitforwindows.org/[`Git Bash`] ({git-bash_version} or newer)
+
+==== Eigen
+Download and extract `Eigen` (see https://eigen.tuxfamily.org/dox/GettingStarted.html[Eigen - Getting started]).
+
+==== OpenCV
+image:https://img.shields.io/badge/Open CV-{opencv_version}+-brightgreen[OpenCV Version]
+
+. Navigate to the directory where you wish to install `OpenCV` (eg. `{directory}/AR_Voxel_Project/Libs`)
+. create new file `installOCV.sh` with the following content:
++
+[source, shell]
+----
+#!/bin/bash -e
+
+# taken from: https://docs.opencv.org/3.4/d3/d52/tutorial_windows_install.html
+
+myRepo=$(pwd)
+CMAKE_GENERATOR_OPTIONS=-G"Visual Studio 17 2022"
+#CMAKE_GENERATOR_OPTIONS=-G"Visual Studio 16 2019"
+#CMAKE_GENERATOR_OPTIONS=-G"Visual Studio 15 2017 Win64"
+#CMAKE_GENERATOR_OPTIONS=(-G"Visual Studio 16 2019" -A x64)  # CMake 3.14+ is required
+if [  ! -d "$myRepo/opencv"  ]; then
+    echo "cloning opencv"
+    git clone https://github.com/opencv/opencv.git
+else
+    cd opencv
+    git pull --rebase
+    cd ..
+fi
+if [  ! -d "$myRepo/opencv_contrib"  ]; then
+    echo "cloning opencv_contrib"
+    git clone https://github.com/opencv/opencv_contrib.git
+else
+    cd opencv_contrib
+    git pull --rebase
+    cd ..
+fi
+RepoSource=opencv
+mkdir -p build_opencv
+pushd build_opencv
+CMAKE_OPTIONS=(-DBUILD_PERF_TESTS:BOOL=OFF -DBUILD_TESTS:BOOL=OFF -DBUILD_DOCS:BOOL=OFF  -DWITH_CUDA:BOOL=OFF -DBUILD_EXAMPLES:BOOL=OFF -DINSTALL_CREATE_DISTRIB=ON)
+set -x
+cmake "${CMAKE_GENERATOR_OPTIONS[@]}" "${CMAKE_OPTIONS[@]}" -DOPENCV_EXTRA_MODULES_PATH="$myRepo"/opencv_contrib/modules -DCMAKE_INSTALL_PREFIX="$myRepo/install/$RepoSource" "$myRepo/$RepoSource"
+echo "************************* $Source_DIR -->debug"
+cmake --build .  --config debug
+echo "************************* $Source_DIR -->release"
+cmake --build .  --config release
+cmake --build .  --target install --config release
+cmake --build .  --target install --config debug
+popd
+----
+. Adjust the `CMAKE_GENERATOR_OPTIONS` according to your Visual Studio version.
+. In git command line enter the following command:
++
+[soruce, shell]
+----
+./installOCV.sh
+----
++
+This script will generate the required installation of `Open CV` in the current directory (eg. `{directory}/AR_Voxel_Project/Libs/build_opencv`).
+. Keep in mind that this will take some time.
+. For further information please check the https://docs.opencv.org/3.4/d3/d52/tutorial_windows_install.html[official OpenCV website].
+
+=== Other OS
+Please refere to the following instructions:
+
+* Eigen: https://eigen.tuxfamily.org/dox/GettingStarted.html[All OS]
+* Open CV: https://docs.opencv.org/3.4/d7/d9f/tutorial_linux_install.html[Linux] https://docs.opencv.org/3.4/d0/db2/tutorial_macos_install.html[MacOS] 
 
 .Folder Structure
 
