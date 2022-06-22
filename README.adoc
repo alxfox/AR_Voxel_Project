@@ -47,6 +47,8 @@ image:https://img.shields.io/badge/Open CV-{opencv_version}+-brightgreen[OpenCV 
 * voxel_project
 ** Build
 ** Data
+*** calib_00.jpg
+*** calib_01.jpg...
 * Libs
 ** Eigen3
 ** opencv
@@ -54,6 +56,8 @@ image:https://img.shields.io/badge/Open CV-{opencv_version}+-brightgreen[OpenCV 
 *** opencv
 ** opencv_contrib
 
+
+Command Line Arguments: -w=5 -h=7 -sl=0.04 -ml=0.02 -d=10 -v="../Data/calib_%02d.jpg" myoutfile
 
 == Abstract
 `TODO`
