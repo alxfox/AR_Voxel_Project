@@ -246,4 +246,5 @@ static inline int calibrate(vector<int>& excludedImages, string outputFile="out/
 			if (key == 27) break;
 		}
 	}
+	return 0;
 }

@@ -19,6 +19,7 @@ find_package(OpenCV REQUIRED)
 set(HEADERS
     src/Calibration.h
     src/Model.h
+    src/PoseEstimation.h
 )
 
 set(SOURCES

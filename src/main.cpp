@@ -1,26 +1,17 @@
 #include <vector>
 #include <iostream>
 #include "Calibration.h"
+#include "PoseEstimation.h"
 #include <filesystem>
 namespace fs = std::filesystem;
 namespace {
 	const char* about =
 		"AR Voxel Carving Project\n";
 	const char* keys =
-		"{c        |       | Put value of c=1 to create charuco board;\nc=2 for camera calibration using ChArUco boards;\nc=3 not yet}"
-		"{w        |       | Number of squares in X direction }"
-		"{h        |       | Number of squares in Y direction }"
-		"{sl       |       | Square side length (in meters) }"
-		"{ml       |       | Marker side length (in meters) }"
-		"{d        |       | dictionary: DICT_4X4_50=0, DICT_4X4_100=1, DICT_4X4_250=2,"
-		"DICT_4X4_1000=3, DICT_5X5_50=4, DICT_5X5_100=5, DICT_5X5_250=6, DICT_5X5_1000=7, "
-		"DICT_6X6_50=8, DICT_6X6_100=9, DICT_6X6_250=10, DICT_6X6_1000=11, DICT_7X7_50=12,"
-		"DICT_7X7_100=13, DICT_7X7_250=14, DICT_7X7_1000=15, DICT_ARUCO_ORIGINAL = 16}"
-		"{cd       |       | Input file with custom dictionary }"
-		"{@outfile |<none> | Output file with calibrated camera parameters }"
-		"{v        |       | Input from video file, default is '../Data/calib_%02d.jpg' }"
-		"{rs       | false | Apply refind strategy }"
-		"{sc       | false | Show detected chessboard corners after calibration }";
+		"{c        		|       | 1 for AruCo board creation, 2 for camera calibration, 3 for pose estimation}"
+		"{images        |       | Give the path to the directory containing the images}"
+        "{calibration   |       | Give the path to the result of the camera calibration (eg. kinect_v1.txt)}"
+        "{video_id      | -1    | Give the id to the video stream for which you want to estimate the pose}";
 }
 
 // generate board with default values (fits A4 format)
@@ -103,8 +94,37 @@ int main(int argc, char* argv[])
 	}
 	break;
 	case 3:
-		//detectChArUco();
-		break;
+	{
+		cv::Mat camera_matrix, dist_Coeffs; 
+		loadCalibrationFile(parser.get<std::string>("calibration"), &camera_matrix, &dist_Coeffs);
+		std::cout << camera_matrix << dist_Coeffs << std::endl;
+
+		// Determine whether to run with images or a video stream
+		if (parser.get<std::string>("video_id").empty()){
+			std::string image_dir = parser.get<std::string>("images");
+			if (image_dir.empty()){
+				std::cout << "You need to define a images path (--images) if you do not set a video stream id (--video_id)" << std::endl;
+			} else {
+				std::vector<std::string> filenames;
+				cv::glob(parser.get<std::string>("images"), filenames);
+				for (int i=0; i < filenames.size(); i++){
+					cv::Mat image = cv::imread(filenames[i], 0);
+					cv::Mat transformation_matrix = estimatePoseFromImage(camera_matrix, dist_Coeffs, image, true);
+					//std::cout << transformation_matrix << std::endl;
+				}
+			}
+		} else {
+			cv::VideoCapture inputVideo;
+			inputVideo.open(parser.get<int>("video_id"));
+			while (inputVideo.grab()) {
+				cv::Mat image;
+				inputVideo.retrieve(image);
+				cv::Mat transformation_matrix = estimatePoseFromImage(camera_matrix, dist_Coeffs, image, true);
+				//std::cout << transformation_matrix << std::endl;
+			}
+		}
+	}
+	break;
 	default:
 		break;
 	}
