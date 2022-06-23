@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Calibration.h"
 #include "PoseEstimation.h"
+#include "Segmentation.h"
 #include <filesystem>
 namespace fs = std::filesystem;
 namespace {
@@ -123,6 +124,25 @@ int main(int argc, char* argv[])
 				//std::cout << transformation_matrix << std::endl;
 			}
 		}
+	}
+	break;
+	case 4:
+	{
+		cv::VideoCapture inputVideo;
+			inputVideo.open(parser.get<int>("video_id"));
+			while (inputVideo.grab()) {
+				cv::Mat image;
+				inputVideo.retrieve(image);
+				//cv::Mat segmentation_map = kmeans_segmentation(image);
+				cv::Mat mask = color_segmentation(image);
+				cv::Mat segmentated_img;
+				image.copyTo(segmentated_img, mask);
+				imshow("mask", mask);
+				imshow("source", image);
+				imshow("segmentation", segmentated_img);
+    			char key = (char)waitKey(1);
+				//std::cout << transformation_matrix << std::endl;
+			}
 	}
 	break;
 	default:

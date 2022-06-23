@@ -20,6 +20,7 @@ set(HEADERS
     src/Calibration.h
     src/Model.h
     src/PoseEstimation.h
+    src/Segmentation.h
 )
 
 set(SOURCES
