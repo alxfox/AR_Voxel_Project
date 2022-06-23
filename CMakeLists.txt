@@ -18,10 +18,12 @@ find_package(OpenCV REQUIRED)
 # Define header and source files
 set(HEADERS
     src/Calibration.h
+    src/Model.h
 )
 
 set(SOURCES
     src/main.cpp
+    src/Model.cpp
 )
 
 add_executable(voxel_project ${HEADERS} ${SOURCES})
