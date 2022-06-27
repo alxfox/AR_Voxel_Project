@@ -10,25 +10,17 @@ namespace {
 		"AR Voxel Carving Project\n";
 	const char* keys =
 		"{c        		|       | 1 for AruCo board creation, 2 for camera calibration, 3 for pose estimation}"
-		"{images        |       | Give the path to the directory containing the images}"
-        "{calibration   |       | Give the path to the result of the camera calibration (eg. kinect_v1.txt)}"
-        "{video_id      | -1    | Give the id to the video stream for which you want to estimate the pose}";
+		"{resize        | 1.0      | Resize the image preview during calibration by this factor}"
+		"{live        | true      | Whether to use live camera calibration, otherwise images will be taken from ../Data/calib_%02d.jpg}"
+		"{images        |       | Give the path to the directory containing the images for pose estimation}"
+		"{calibration   |       | Give the path to the result of the camera calibration (eg. kinect_v1.txt)}"
+		"{video_id      | -1    | Give the id to the video stream for which you want to estimate the pose}";
 }
 
-// generate board with default values (fits A4 format)
-static inline void createBoard()
-{
-	cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
-	//! [createBoard]
-	cv::Ptr<cv::aruco::CharucoBoard> board = cv::aruco::CharucoBoard::create(5, 7, 0.04f, 0.02f, dictionary);
-	cv::Mat boardImage;
-	board->draw(cv::Size(2490, 3510), boardImage, 10, 1);
-	//! [createBoard]
-	cv::imwrite("out/BoardImage.jpg", boardImage);
-}
 int main(int argc, char* argv[])
 {
 	std::filesystem::create_directories("./out");
+	std::filesystem::create_directories("./out/tmp");
 	cv::CommandLineParser parser(argc, argv, keys);
 	parser.about(about);
 	if (argc < 2) {
@@ -38,24 +30,36 @@ int main(int argc, char* argv[])
 	int choose = parser.get<int>("c");
 	//std::cout << "test" << choose << std::endl;
 	switch (choose) {
-	case 1:
-		createBoard();
-		std::cout << "An image named BoardImg.jpg is generated in folder containing this file" << std::endl;
-		break;
+	case 1: {
+		Calibration cal{};
+		cal.createBoard("out/BoardImage.jpg");
+		break; 
+	}
 	case 2:
 	{
-		// TODO: add customization (data source, output etc.)
-		/*if (parser.has("v")) {
-			string video = parser.get<String>("v");
-			//video = "../Data/calib_%02d.jpg";
-			video = "../Data/calib.mp4";
-		}*/
-		bool calibrating = true;
+		try
+		{
+			String xxx = parser.get<String>("live");
+		}
+		catch (const std::exception& e)
+		{
+			std::cout << e.what() << std::endl;
+		}
+		
+		bool liveCalibration = parser.get<bool>("live");
+
+		Calibration cal{};
+		cal.createBoard();
+		cal.resizeFactor = 2;
 		vector<int> excludedImages;
+		bool calibrating = true;
+		bool firstCalibration = true;
+		if (!liveCalibration) cal.resizeFactor = parser.get<float>("resize");
 		do {
-			calibrate(excludedImages);
+			cal.calibrate(excludedImages, liveCalibration, !firstCalibration, "../Data/calib_%02d.jpg");
+			liveCalibration = false;
 			string input;
-		    std::cout << "Enter ids of images to exclude, then enter y to repeat calibration. Use l to list current exclusions or n to exit" << std::endl;
+			std::cout << "Enter ids of images to exclude, then enter y to repeat calibration. Use l to list current exclusions or n to exit" << std::endl;
 			while (true) {
 				std::cin >> input;
 				try
@@ -86,6 +90,10 @@ int main(int argc, char* argv[])
 						}
 						std::cout << std::endl;
 					}
+					else if (input.size() > 0 && input.at(0) == 'x') { // exit calibration
+						liveCalibration = true;
+						break;
+					}
 					else { // continue calibration loop with exclusions
 						break;
 					}
@@ -96,25 +104,27 @@ int main(int argc, char* argv[])
 	break;
 	case 3:
 	{
-		cv::Mat camera_matrix, dist_Coeffs; 
+		cv::Mat camera_matrix, dist_Coeffs;
 		loadCalibrationFile(parser.get<std::string>("calibration"), &camera_matrix, &dist_Coeffs);
 		std::cout << camera_matrix << dist_Coeffs << std::endl;
 
 		// Determine whether to run with images or a video stream
-		if (parser.get<std::string>("video_id").empty()){
+		if (parser.get<std::string>("video_id").empty()) {
 			std::string image_dir = parser.get<std::string>("images");
-			if (image_dir.empty()){
+			if (image_dir.empty()) {
 				std::cout << "You need to define a images path (--images) if you do not set a video stream id (--video_id)" << std::endl;
-			} else {
+			}
+			else {
 				std::vector<std::string> filenames;
 				cv::glob(parser.get<std::string>("images"), filenames);
-				for (int i=0; i < filenames.size(); i++){
+				for (int i = 0; i < filenames.size(); i++) {
 					cv::Mat image = cv::imread(filenames[i], 0);
 					cv::Mat transformation_matrix = estimatePoseFromImage(camera_matrix, dist_Coeffs, image, true);
 					//std::cout << transformation_matrix << std::endl;
 				}
 			}
-		} else {
+		}
+		else {
 			cv::VideoCapture inputVideo;
 			inputVideo.open(parser.get<int>("video_id"));
 			while (inputVideo.grab()) {
@@ -129,20 +139,20 @@ int main(int argc, char* argv[])
 	case 4:
 	{
 		cv::VideoCapture inputVideo;
-			inputVideo.open(parser.get<int>("video_id"));
-			while (inputVideo.grab()) {
-				cv::Mat image;
-				inputVideo.retrieve(image);
-				//cv::Mat segmentation_map = kmeans_segmentation(image);
-				cv::Mat mask = color_segmentation(image);
-				cv::Mat segmentated_img;
-				image.copyTo(segmentated_img, mask);
-				imshow("mask", mask);
-				imshow("source", image);
-				imshow("segmentation", segmentated_img);
-    			char key = (char)waitKey(1);
-				//std::cout << transformation_matrix << std::endl;
-			}
+		inputVideo.open(parser.get<int>("video_id"));
+		while (inputVideo.grab()) {
+			cv::Mat image;
+			inputVideo.retrieve(image);
+			//cv::Mat segmentation_map = kmeans_segmentation(image);
+			cv::Mat mask = color_segmentation(image);
+			cv::Mat segmentated_img;
+			image.copyTo(segmentated_img, mask);
+			imshow("mask", mask);
+			imshow("source", image);
+			imshow("segmentation", segmentated_img);
+			char key = (char)waitKey(1);
+			//std::cout << transformation_matrix << std::endl;
+		}
 	}
 	break;
 	default:
