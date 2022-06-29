@@ -414,14 +414,14 @@ static MC_Interpolate VertexInterp(float threshold, Vector3f point0, Vector4f va
 	ret.coord = point0 + interpolateFactor * (point1 - point0);
 	Vector3f col0 = Vector3f(val0.x(), val0.y(), val0.z());
 	Vector3f col1 = Vector3f(val1.x(), val1.y(), val1.z());
-	ret.color = col0 + interpolateFactor * (col1 - col0);
+	ret.color = col0 + interpolateFactor * (col1 - col0);		// TODO: correct color interpolation
 	return ret;
 }
 
 static int Polygonise(MC_Gridcell cell, float threshold, MC_Triangle* triangles) {
 	int cubeIdx = 0;
 	for (int i = 0; i < 8; i++) {
-		if (cell.val[i].w() < threshold) {
+		if (cell.val[i].w() < threshold) {		// TODO: should this work differently?
 			cubeIdx |= 1 << i;
 		}
 	}
@@ -501,7 +501,7 @@ static bool ProcessVoxel(Model model, int x, int y, int z, SimpleMesh* mesh, flo
 	return true;
 }
 
-bool marchingCubes(Model model, std::string outFileName, float threshold);
+bool marchingCubes(Model model, float threshold, std::string outFileName);
 bool testMarchingCubes();
 
 #endif

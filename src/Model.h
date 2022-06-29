@@ -10,7 +10,10 @@ private:
 	const int size_z;
 	std::vector<Vector4f> voxels;
 
-	int flatten(int x, int y, int z) { return x + getY() * (y + getZ() * z); };
+	int flatten(int x, int y, int z) { 
+		//std::cout << "(" << x << ", " << y << ", " << z << ") ->" << x + getY() * (y + getZ() * z) << std::endl;
+		return x + getX() * (y + getY() * z); 
+	};
 
 public:
 	Model(int x, int y, int z);
@@ -18,7 +21,12 @@ public:
 	int getX() { return size_x; }
 	int getY() { return size_y; }
 	int getZ() { return size_z; }
-	Vector4f get(int x, int y, int z) {return voxels[flatten(x, y, z)]; }
+	Vector4f get(int x, int y, int z) {
+		if (x < 0 || x >= size_x || y < 0 || y >= size_y || z < 0 || z >= size_z) {
+			return Vector4f(0, 0, 0, -1);
+		}
+		return voxels[flatten(x, y, z)]; 
+	}
 	std::string to_string();
 };
 
