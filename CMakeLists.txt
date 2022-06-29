@@ -21,11 +21,13 @@ set(HEADERS
     src/Model.h
     src/PoseEstimation.h
     src/Segmentation.h
+    src/MarchingCubes.h
 )
 
 set(SOURCES
     src/main.cpp
     src/Model.cpp
+    src/MarchingCubes.cpp
 )
 
 add_executable(voxel_project ${HEADERS} ${SOURCES})
