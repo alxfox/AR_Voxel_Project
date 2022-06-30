@@ -409,12 +409,24 @@ static unsigned int MeanColorFloats(float c1, float c2, float c3) {
 
 static MC_Interpolate VertexInterp(float threshold, const Vector3f& point0, const Vector4f& val0, const Vector3f& point1, const Vector4f& val1) {
 	// TODO: other interpolation necessary?
-	float interpolateFactor = (val0.w() - threshold) / (val0.w() - val1.w());
 	MC_Interpolate ret;
-	ret.coord = point0 + interpolateFactor * (point1 - point0);
+	
+	if (val0.w() == 0.0f && val1.w() != 0.0f) {
+		ret.color = Vector3f(val1.x(), val1.y(), val1.z());
+		ret.coord = point1;
+		return ret;
+	}
+	else if (val0.w() != 0.0f && val1.w() == 0.0f) {
+		ret.color = Vector3f(val0.x(), val0.y(), val0.z());
+		ret.coord = point0;
+		return ret;
+	}
+
+	float interpolateFactor = (threshold - val0.w()) / (val1.w() - val0.w());
+	ret.coord = (1-interpolateFactor) * point0 + interpolateFactor * point1;
 	Vector3f col0 = Vector3f(val0.x(), val0.y(), val0.z());
 	Vector3f col1 = Vector3f(val1.x(), val1.y(), val1.z());
-	ret.color = col0 + interpolateFactor * (col1 - col0);		// TODO: correct color interpolation
+	ret.color = (1-interpolateFactor) * col0 + interpolateFactor * col1;
 	return ret;
 }
 

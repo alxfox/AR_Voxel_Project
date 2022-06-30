@@ -30,17 +30,32 @@ bool marchingCubes(Model* model, float threshold = 0.5f, std::string outFileName
 // Testing
 bool testMarchingCubes() {
 	std::cout << "Testing marching cubes" << std::endl;
-	Model model(2, 2, 4);
-	//std::cout << model.getX() << ", " << model.getY() << ", " << model.getZ() << std::endl;
+	Model model(4, 4, 4);
 	for (int x = 0; x < model.getX(); x++) {
 		for (int y = 0; y < model.getY(); y++) {
-			//std::cout << y << ", " << z << std::endl;
-			model.set(x, y, 0, Vector4f(133, 133, 133, 0.f));
-			model.set(x, y, 1, Vector4f(133, 133, 133, 0.2f));
-			model.set(x, y, 2, Vector4f(133, 133, 133, 0.9f));
-			model.set(x, y, 3, Vector4f(133, 133, 133, 1.f));
+			for (int z = 0; z < model.getZ(); z++) {
+				model.set(x, y, z, Vector4f(0, 255, 100, 1));
+			}
 		}
 	}
+
+	model.set(0, 0, 0, Vector4f(0, 0, 0, 0));
+	model.set(3, 0, 0, Vector4f(0, 0, 0, 0));
+	model.set(0, 3, 0, Vector4f(0, 0, 0, 0));
+	model.set(3, 3, 0, Vector4f(0, 0, 0, 0));
+	model.set(0, 0, 3, Vector4f(0, 0, 0, 0));
+	model.set(3, 0, 3, Vector4f(0, 0, 0, 0));
+	model.set(0, 3, 3, Vector4f(0, 0, 0, 0));
+	model.set(3, 3, 3, Vector4f(0, 0, 0, 0));
+	model.set(0, 0, 2, Vector4f(0, 0, 0, 0));
+	model.set(3, 0, 2, Vector4f(0, 0, 0, 0));
+	model.set(0, 3, 2, Vector4f(0, 0, 0, 0));
+	model.set(3, 3, 2, Vector4f(0, 0, 0, 0));
+	model.set(0, 0, 1, Vector4f(0, 0, 0, 0));
+	model.set(3, 0, 1, Vector4f(0, 0, 0, 0));
+	model.set(0, 3, 1, Vector4f(0, 0, 0, 0));
+	model.set(3, 3, 1, Vector4f(0, 0, 0, 0));
+
 	std::cout << "Model setup completed: " << model.to_string() << std::endl;
 
 	if (!marchingCubes(&model)) {

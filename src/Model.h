@@ -11,7 +11,6 @@ private:
 	std::vector<Vector4f> voxels;
 
 	int flatten(int x, int y, int z) { 
-		//std::cout << "(" << x << ", " << y << ", " << z << ") ->" << x + getY() * (y + getZ() * z) << std::endl;
 		return x + getX() * (y + getY() * z); 
 	};
 
@@ -23,7 +22,7 @@ public:
 	int getZ() { return size_z; }
 	Vector4f get(int x, int y, int z) {
 		if (x < 0 || x >= size_x || y < 0 || y >= size_y || z < 0 || z >= size_z) {
-			return Vector4f(0, 0, 0, -1);
+			return Vector4f(0, 0, 0, 0);
 		}
 		return voxels[flatten(x, y, z)]; 
 	}
