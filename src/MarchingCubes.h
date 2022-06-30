@@ -32,7 +32,7 @@ struct Triangle {
 
 class SimpleMesh {
 public:
-	unsigned int AddVertex(Vector3f& vertex)
+	unsigned int AddVertex(const Vector3f& vertex)
 	{
 		unsigned int vId = (unsigned int)m_vertices.size();
 		m_vertices.push_back(vertex);
@@ -407,7 +407,7 @@ static unsigned int MeanColorFloats(float c1, float c2, float c3) {
 	return std::round((c1 + c2 + c3) / 3);
 }
 
-static MC_Interpolate VertexInterp(float threshold, Vector3f point0, Vector4f val0, Vector3f point1, Vector4f val1) {
+static MC_Interpolate VertexInterp(float threshold, const Vector3f& point0, const Vector4f& val0, const Vector3f& point1, const Vector4f& val1) {
 	// TODO: other interpolation necessary?
 	float interpolateFactor = (val0.w() - threshold) / (val0.w() - val1.w());
 	MC_Interpolate ret;
@@ -418,10 +418,10 @@ static MC_Interpolate VertexInterp(float threshold, Vector3f point0, Vector4f va
 	return ret;
 }
 
-static int Polygonise(MC_Gridcell cell, float threshold, MC_Triangle* triangles) {
+static int Polygonise(const MC_Gridcell& cell, float threshold, MC_Triangle* triangles) {
 	int cubeIdx = 0;
 	for (int i = 0; i < 8; i++) {
-		if (cell.val[i].w() < threshold) {		// TODO: should this work differently?
+		if (cell.val[i].w() < threshold) {
 			cubeIdx |= 1 << i;
 		}
 	}
@@ -453,26 +453,26 @@ static int Polygonise(MC_Gridcell cell, float threshold, MC_Triangle* triangles)
 	return nTriang;
 }
 
-static bool ProcessVoxel(Model model, int x, int y, int z, SimpleMesh* mesh, float threshold) {
+static bool ProcessVoxel(Model* model, int x, int y, int z, SimpleMesh* mesh, float threshold) {
 
 	MC_Gridcell cell;
 
 	// cell corners+values
-	cell.val[0] = model.get(x + 1, y, z);
+	cell.val[0] = model->get(x + 1, y, z);
 	cell.p[0] = Vector3f(x + 1, y, z);
-	cell.val[1] = model.get(x, y, z);
+	cell.val[1] = model->get(x, y, z);
 	cell.p[1] = Vector3f(x, y, z);
-	cell.val[2] = model.get(x, y + 1, z);
+	cell.val[2] = model->get(x, y + 1, z);
 	cell.p[2] = Vector3f(x, y + 1, z);
-	cell.val[3] = model.get(x + 1, y + 1, z);
+	cell.val[3] = model->get(x + 1, y + 1, z);
 	cell.p[3] = Vector3f(x + 1, y + 1, z);
-	cell.val[4] = model.get(x + 1, y, z + 1);
+	cell.val[4] = model->get(x + 1, y, z + 1);
 	cell.p[4] = Vector3f(x + 1, y, z + 1);
-	cell.val[5] = model.get(x, y, z + 1);
+	cell.val[5] = model->get(x, y, z + 1);
 	cell.p[5] = Vector3f(x, y, z + 1);
-	cell.val[6] = model.get(x, y + 1, z + 1);
+	cell.val[6] = model->get(x, y + 1, z + 1);
 	cell.p[6] = Vector3f(x, y + 1, z + 1);
-	cell.val[7] = model.get(x + 1, y + 1, z + 1);
+	cell.val[7] = model->get(x + 1, y + 1, z + 1);
 	cell.p[7] = Vector3f(x + 1, y + 1, z + 1);
 
 	MC_Triangle tris[6];
