@@ -7,12 +7,12 @@ inline cv::Mat color_segmentation(cv::Mat Input){
     cv::cvtColor(Input, hsv_img, cv::COLOR_BGR2HSV);
 
     cv::Mat mask;
-    inRange(rgb_img, cv::Scalar(60, 60, 60), cv::Scalar(255, 255, 255), mask);
+    inRange(rgb_img, cv::Scalar(120, 120, 120), cv::Scalar(255, 255, 255), mask);
 
     //cv::Mat segmentation_map;
     //bitwise_not(mask, segmentation_map);
     //return segmentation_map;
-    return mask;
+    return ~mask;
 }    
     
 inline cv::Mat kmeans_segmentation(cv::Mat Input) {

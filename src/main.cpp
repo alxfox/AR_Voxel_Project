@@ -11,8 +11,8 @@ namespace {
 		"AR Voxel Carving Project\n";
 	const char* keys =
 		"{c        		|       | 1 for AruCo board creation, 2 for camera calibration, 3 for pose estimation}"
-		"{resize        | 1.0      | Resize the image preview during calibration by this factor}"
-		"{live        | true      | Whether to use live camera calibration, otherwise images will be taken from ../Data/calib_%02d.jpg}"
+		"{resize        | 1.0   | Resize the image preview during calibration by this factor}"
+		"{live          | true  | Whether to use live camera calibration, otherwise images will be taken from ../Data/calib_%02d.jpg}"
 		"{images        |       | Give the path to the directory containing the images for pose estimation}"
 		"{calibration   |       | Give the path to the result of the camera calibration (eg. kinect_v1.txt)}"
 		"{video_id      | -1    | Give the id to the video stream for which you want to estimate the pose}";
@@ -119,9 +119,9 @@ int main(int argc, char* argv[])
 				std::vector<std::string> filenames;
 				cv::glob(parser.get<std::string>("images"), filenames);
 				for (int i = 0; i < filenames.size(); i++) {
-					cv::Mat image = cv::imread(filenames[i], 0);
+					cv::Mat image = cv::imread(filenames[i], 1);
 					cv::Mat transformation_matrix = estimatePoseFromImage(camera_matrix, dist_Coeffs, image, true);
-					//std::cout << transformation_matrix << std::endl;
+					std::cout << transformation_matrix << std::endl;
 				}
 			}
 		}
