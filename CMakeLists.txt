@@ -21,12 +21,14 @@ set(HEADERS
     src/Model.h
     src/PoseEstimation.h
     src/Segmentation.h
+    src/MarchingCubes.h
     src/VoxelCarving.h
 )
 
 set(SOURCES
     src/main.cpp
     src/Model.cpp
+    src/MarchingCubes.cpp
     src/VoxelCarving.cpp
 )
 
