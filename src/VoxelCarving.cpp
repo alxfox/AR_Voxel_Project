@@ -26,8 +26,8 @@ static void carve(cv::Mat* cameraMatrix, cv::Mat* distCoeffs, Model* model, cv::
                 // for each voxel check if corresponding pixel is solid or background
                 cv::Mat subm = pose(cv::Rect(0, 0, 4, 3));
                 cv::Vec3f camera_coord = worldToCamera(x, y, z, &subm, cameraMatrix);
-                Vec3b pixel = mask.at<Vec3b>(Point((int) camera_coord[0], (int) camera_coord[1]));
-                if (Scalar(0, 0, 0) == Scalar(pixel)) // masked pixel -> set alpha = 0
+                cv::Vec3b pixel = mask.at<cv::Vec3b>(cv::Point((int) camera_coord[0], (int) camera_coord[1]));
+                if (cv::Scalar(0, 0, 0) == cv::Scalar(pixel)) // masked pixel -> set alpha = 0
                 {
                     model->get(x, y, z)(4) = 0;
                 }
