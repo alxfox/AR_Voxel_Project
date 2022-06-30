@@ -1,3 +1,7 @@
+#pragma once
+#include <opencv2/aruco/charuco.hpp>
+#include <iostream>
+
 /**
  * @brief This function reads the 
  * 
