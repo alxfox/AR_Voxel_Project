@@ -3,6 +3,7 @@
 #include "Calibration.h"
 #include "PoseEstimation.h"
 #include "Segmentation.h"
+#include "VoxelCarving.h"
 #include <filesystem>
 namespace fs = std::filesystem;
 namespace {
