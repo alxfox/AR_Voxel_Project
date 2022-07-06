@@ -1,3 +1,6 @@
+#ifndef MODEL_H
+#define MODEL_H
+
 #include<Eigen/Dense>
 
 using Eigen::Vector4f;
@@ -33,3 +36,4 @@ public:
 	std::string to_string();
 };
 
+#endif
