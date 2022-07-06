@@ -4,7 +4,7 @@
 
 #include "MarchingCubes.h"
 
-bool marchingCubes(Model* model, float threshold = 0.5f, std::string outFileName = "out/mesh.off") {
+bool marchingCubes(Model* model, float threshold, std::string outFileName) {
 	std::cout << "LOG - MC: starting to process Voxels." << std::endl;
 	SimpleMesh mesh;
 	for (int x = -1; x < model->getX(); x++) {
