@@ -53,10 +53,19 @@ static cv::Mat estimatePoseFromImage(cv::Mat cameraMatrix, cv::Mat distCoeffs, c
                 cv::Mat translation = -rotation_matrix * tvec; // -
 
                 // Build the transformation matrix
-                cv::Mat transformation_matrix = cv::Mat::eye(4, 4, rotation_matrix.type()); // T is 4x4
-                transformation_matrix( cv::Range(0,3), cv::Range(0,3) ) = rotation_matrix * 1; // copies R into T
-                transformation_matrix( cv::Range(0,3), cv::Range(3,4) ) = translation * 1; // copies tvec into T
-                std::cout << translation << std::endl;
+                transformation_matrix.at<float>(0, 0) = rotation_matrix.at<double>(0, 0);
+                transformation_matrix.at<float>(0, 1) = rotation_matrix.at<double>(0, 1);
+                transformation_matrix.at<float>(0, 2) = rotation_matrix.at<double>(0, 2);
+                transformation_matrix.at<float>(0, 3) = translation.at<double>(0, 0);
+                transformation_matrix.at<float>(1, 0) = rotation_matrix.at<double>(1, 0);
+                transformation_matrix.at<float>(1, 1) = rotation_matrix.at<double>(1, 1);
+                transformation_matrix.at<float>(1, 2) = rotation_matrix.at<double>(1, 2);
+                transformation_matrix.at<float>(1, 3) = translation.at<double>(0, 1);
+                transformation_matrix.at<float>(2, 0) = rotation_matrix.at<double>(2, 0);
+                transformation_matrix.at<float>(2, 1) = rotation_matrix.at<double>(2, 1);
+                transformation_matrix.at<float>(2, 2) = rotation_matrix.at<double>(2, 2);
+                transformation_matrix.at<float>(2, 3) = translation.at<double>(0, 2);
+                std::cout << rotation_matrix << std::endl;
         }
     }
     if (visualize){
