@@ -13,6 +13,7 @@ private:
 	const int size_z;
 	std::vector<Vector4f> voxels;
 	std::vector<std::vector<Vector4f>> colors;
+	std::vector<bool> visited;
 
 	int flatten(int x, int y, int z) { 
 		return x + getX() * (y + getY() * z); 
@@ -33,6 +34,8 @@ public:
 	}
   
 	void addColor(int x, int y, int z, const Vector4f& c) { colors[flatten(x, y, z)].push_back(c); };
+	void visit(int x, int y, int z) { visited[flatten(x, y, z)] = true; }
+	void removeUnvisited();
 	std::string to_string();
 };
 
