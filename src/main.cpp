@@ -4,18 +4,22 @@
 #include "PoseEstimation.h"
 #include "Segmentation.h"
 #include "VoxelCarving.h"
+#include "MarchingCubes.h"
 #include <filesystem>
 namespace fs = std::filesystem;
 namespace {
 	const char* about =
 		"AR Voxel Carving Project\n";
 	const char* keys =
-		"{c        		|       | 1 for AruCo board creation, 2 for camera calibration, 3 for pose estimation}"
+		"{c        		|       | 1 for AruCo board creation, 2 for camera calibration, 3 for pose estimation, 5 for carving}"
 		"{resize        | 1.0   | Resize the image preview during calibration by this factor}"
 		"{live          | true  | Whether to use live camera calibration, otherwise images will be taken from ../Data/calib_%02d.jpg}"
-		"{images        |       | Give the path to the directory containing the images for pose estimation}"
+		"{images        |       | Give the path to the directory containing the images for pose estimation/carving}"
 		"{calibration   |       | Give the path to the result of the camera calibration (eg. kinect_v1.txt)}"
-		"{video_id      | -1    | Give the id to the video stream for which you want to estimate the pose}";
+		"{video_id      | -1    | Give the id to the video stream for which you want to estimate the pose}"
+		"{carve         | 1     | 1 for simple carving, 2 for simple carving with mask filter}"
+		"{masks          |       | Give the path to the directory containing the image masks}"
+		;
 }
 
 int main(int argc, char* argv[])
@@ -34,7 +38,7 @@ int main(int argc, char* argv[])
 	case 1: {
 		Calibration cal{};
 		cal.createBoard("out/BoardImage.jpg");
-		break; 
+		break;
 	}
 	case 2:
 	{
@@ -46,7 +50,7 @@ int main(int argc, char* argv[])
 		{
 			std::cout << e.what() << std::endl;
 		}
-		
+
 		bool liveCalibration = parser.get<bool>("live");
 
 		Calibration cal{};
@@ -154,6 +158,64 @@ int main(int argc, char* argv[])
 			char key = (char)waitKey(1);
 			//std::cout << transformation_matrix << std::endl;
 		}
+	}
+	break;
+	case 5:
+	{
+		if (parser.get<int>("carve") < 1 || 2 < parser.get<int>("carve")) {
+			std::cerr << "Invalid carve argument.";
+			break;
+		}
+		std::string image_dir = parser.get<std::string>("images");
+		if (image_dir.empty()) {
+			std::cerr << "You need to define a images path (--images)" << std::endl;
+			break;
+		}
+
+		std::vector<std::string> image_filenames;
+		cv::glob(image_dir, image_filenames);
+		std::vector<cv::Mat> images;
+		for (int i = 0; i < image_filenames.size(); i++) {
+			images.push_back(cv::imread(image_filenames[i], 1));
+		}
+
+		std::cout << "LOG - VC: images read." << std::endl;
+
+		std::string masks_dir = parser.get<std::string>("masks");
+		if (masks_dir.empty()) {
+			std::cerr << "You need to define a image masks path (--masks)" << std::endl;
+			break;
+		}
+
+		std::vector<std::string> mask_filenames;
+		cv::glob(masks_dir, mask_filenames);
+		std::vector<cv::Mat> masks;
+		for (int i = 0; i < mask_filenames.size(); i++) {
+			masks.push_back(cv::imread(mask_filenames[i], 1));
+		}
+
+		std::cout << "LOG - VC: masks read." << std::endl;
+
+		if (images.size() != masks.size()) {
+			std::cerr << "Number of images doesn't match number of masks." << std::endl;
+			break;
+		}
+
+		Model model = Model(100, 100, 100);
+
+		cv::Mat cameraMatrix, distCoeffs;
+		if (parser.get<std::string>("calibration").empty())
+		{
+			std::cerr << "You need to define the path to the calibration file (--calibration)" << std::endl;
+			break;
+		}
+		loadCalibrationFile(parser.get<std::string>("calibration"), &cameraMatrix, &distCoeffs);
+		std::cout << cameraMatrix << distCoeffs << std::endl;
+		std::cout << "LOG - VC: read carmeraMatrix and distCoefficients." << std::endl;
+
+		carve(cameraMatrix, distCoeffs, model, images, masks);
+
+		marchingCubes(&model);
 	}
 	break;
 	default:

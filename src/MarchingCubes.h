@@ -513,7 +513,7 @@ static bool ProcessVoxel(Model* model, int x, int y, int z, SimpleMesh* mesh, fl
 	return true;
 }
 
-bool marchingCubes(Model* model, float threshold, std::string outFileName);
+bool marchingCubes(Model* model, float threshold = 0.5f, std::string outFileName = "out/mesh.off");
 bool testMarchingCubes();
 
 #endif

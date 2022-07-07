@@ -5,7 +5,7 @@
 
 Model::Model(int x, int y, int z) : size_x(x), size_y(y), size_z(z), voxels(x*y*z), colors(x*y*z) {
 	for (int i = 0; i < x*y*z; i++)
-		voxels[i] = Vector4f(0, 0, 0, 1);
+		voxels[i] = Vector4f(50, 168, 141, 1);
 };
 
 void Model::set(int x, int y, int z, const Vector4f& v) {
