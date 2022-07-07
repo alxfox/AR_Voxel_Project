@@ -15,8 +15,7 @@ static inline void loadCalibrationFile(std::string calibration_file_path, cv::Ma
     }
 }
 
-// cv::Mat4f
-static cv::Mat estimatePoseFromImage(cv::Mat cameraMatrix, cv::Mat distCoeffs, cv::Mat image, bool visualize)
+static cv::Mat4f estimatePoseFromImage(cv::Mat cameraMatrix, cv::Mat distCoeffs, cv::Mat image, bool visualize)
 {
     cv::Mat imageCopy;
     image.copyTo(imageCopy);
@@ -32,8 +31,7 @@ static cv::Mat estimatePoseFromImage(cv::Mat cameraMatrix, cv::Mat distCoeffs, c
     cv::aruco::detectMarkers(image, board->dictionary, markerCorners, markerIds, params);
 
     // Estimate pose if at least 1 marker has been detected
-    // cv::Mat4f
-    cv::Mat transformation_matrix = cv::Mat::eye(4,4,CV_32F);
+    cv::Mat4f transformation_matrix = cv::Mat::eye(4,4,CV_32F);
     if (markerIds.size() > 0) {
         cv::aruco::drawDetectedMarkers(imageCopy, markerCorners, markerIds);
         std::vector<cv::Point2f> charucoCorners;
