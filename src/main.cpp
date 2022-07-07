@@ -18,6 +18,7 @@ namespace {
 		"{calibration   |       | Give the path to the result of the camera calibration (eg. kinect_v1.txt)}"
 		"{video_id      | -1    | Give the id to the video stream for which you want to estimate the pose}"
 		"{carve         | 1     | 1 for simple carving, 2 for simple carving with mask filter}"
+		"{masks          |       | Give the path to the directory containing the image masks}"
 		;
 }
 
@@ -167,18 +168,38 @@ int main(int argc, char* argv[])
 		}
 		std::string image_dir = parser.get<std::string>("images");
 		if (image_dir.empty()) {
-			std::cerr << "You need to define a images path (--images) if you do not set a video stream id (--video_id)" << std::endl;
+			std::cerr << "You need to define a images path (--images)" << std::endl;
 			break;
 		}
 
-		std::vector<std::string> filenames;
-		cv::glob(parser.get<std::string>("images"), filenames);
+		std::vector<std::string> image_filenames;
+		cv::glob(image_dir, image_filenames);
 		std::vector<cv::Mat> images;
-		for (int i = 0; i < filenames.size(); i++) {
-			images.push_back(cv::imread(filenames[i], 1));
+		for (int i = 0; i < image_filenames.size(); i++) {
+			images.push_back(cv::imread(image_filenames[i], 1));
 		}
 
 		std::cout << "LOG - VC: images read." << std::endl;
+
+		std::string masks_dir = parser.get<std::string>("masks");
+		if (masks_dir.empty()) {
+			std::cerr << "You need to define a image masks path (--masks)" << std::endl;
+			break;
+		}
+
+		std::vector<std::string> mask_filenames;
+		cv::glob(masks_dir, mask_filenames);
+		std::vector<cv::Mat> masks;
+		for (int i = 0; i < mask_filenames.size(); i++) {
+			masks.push_back(cv::imread(mask_filenames[i], 1));
+		}
+
+		std::cout << "LOG - VC: masks read." << std::endl;
+
+		if (images.size() != masks.size()) {
+			std::cerr << "Number of images doesn't match number of masks." << std::endl;
+			break;
+		}
 
 		Model model = Model(100, 100, 100);
 
@@ -192,7 +213,7 @@ int main(int argc, char* argv[])
 		std::cout << cameraMatrix << distCoeffs << std::endl;
 		std::cout << "LOG - VC: read carmeraMatrix and distCoefficients." << std::endl;
 
-		carve(cameraMatrix, distCoeffs, model, images);
+		carve(cameraMatrix, distCoeffs, model, images, masks);
 
 		marchingCubes(&model);
 	}
