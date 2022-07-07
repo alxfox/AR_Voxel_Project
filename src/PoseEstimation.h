@@ -49,25 +49,28 @@ static cv::Mat4f estimatePoseFromImage(cv::Mat cameraMatrix, cv::Mat distCoeffs,
                 cv::drawFrameAxes(imageCopy, cameraMatrix, distCoeffs, rvec, tvec, 0.1f);
                 cv::Mat rotation_matrix = cv::Mat::eye(3,3,CV_32F);
                 cv::Rodrigues(rvec, rotation_matrix);
+                rotation_matrix = rotation_matrix.t();
+                cv::Mat translation = -rotation_matrix * tvec;
 
                 // Build the transformation matrix
                 transformation_matrix.at<float>(0, 0) = rotation_matrix.at<double>(0, 0);
                 transformation_matrix.at<float>(0, 1) = rotation_matrix.at<double>(0, 1);
                 transformation_matrix.at<float>(0, 2) = rotation_matrix.at<double>(0, 2);
-                transformation_matrix.at<float>(0, 3) = tvec[0];
+                transformation_matrix.at<float>(0, 3) = translation.at<double>(0, 0);
                 transformation_matrix.at<float>(1, 0) = rotation_matrix.at<double>(1, 0);
                 transformation_matrix.at<float>(1, 1) = rotation_matrix.at<double>(1, 1);
                 transformation_matrix.at<float>(1, 2) = rotation_matrix.at<double>(1, 2);
-                transformation_matrix.at<float>(1, 3) = tvec[1];
+                transformation_matrix.at<float>(1, 3) = translation.at<double>(0, 1);
                 transformation_matrix.at<float>(2, 0) = rotation_matrix.at<double>(2, 0);
                 transformation_matrix.at<float>(2, 1) = rotation_matrix.at<double>(2, 1);
                 transformation_matrix.at<float>(2, 2) = rotation_matrix.at<double>(2, 2);
-                transformation_matrix.at<float>(2, 3) = tvec[2];
+                transformation_matrix.at<float>(2, 3) = translation.at<double>(0, 2);
+                std::cout << rotation_matrix << std::endl;
         }
     }
     if (visualize){
         cv::imshow("out", imageCopy);
-        char key = (char)cv::waitKey(0);
+        cv::waitKey(1);
     }
     return transformation_matrix;
 }
