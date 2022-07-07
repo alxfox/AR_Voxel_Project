@@ -31,7 +31,7 @@ static cv::Mat estimatePoseFromImage(cv::Mat cameraMatrix, cv::Mat distCoeffs, c
     cv::aruco::detectMarkers(image, board->dictionary, markerCorners, markerIds, params);
 
     // Estimate pose if at least 1 marker has been detected
-    cv::Mat4f transformation_matrix = cv::Mat::eye(4,4,CV_32F);
+    cv::Mat transformation_matrix = cv::Mat::eye(4,4,CV_32F);
     if (markerIds.size() > 0) {
         cv::aruco::drawDetectedMarkers(imageCopy, markerCorners, markerIds);
         std::vector<cv::Point2f> charucoCorners;
@@ -50,7 +50,7 @@ static cv::Mat estimatePoseFromImage(cv::Mat cameraMatrix, cv::Mat distCoeffs, c
                 cv::Mat rotation_matrix = cv::Mat::eye(3,3,CV_32F);
                 cv::Rodrigues(rvec, rotation_matrix);
                 rotation_matrix = rotation_matrix.t();
-                cv::Mat translation = -rotation_matrix * tvec;
+                cv::Mat translation = -rotation_matrix * tvec; // -
 
                 // Build the transformation matrix
                 cv::Mat transformation_matrix = cv::Mat::eye(4, 4, rotation_matrix.type()); // T is 4x4
