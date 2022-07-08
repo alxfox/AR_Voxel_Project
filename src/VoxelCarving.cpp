@@ -81,7 +81,7 @@ static void carve(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, cv::
                     carved++;
                     model.set(x, y, z, Eigen::Vector4f(0, 0, 0, 0));
                 }
-                model.visit(x, y, z);
+                model.see(x, y, z);
             }
         }
     }
