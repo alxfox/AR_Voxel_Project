@@ -3,7 +3,7 @@
 #include<Eigen/Dense>
 #include "Model.h"
 
-Model::Model(int x, int y, int z) : size_x(x), size_y(y), size_z(z), voxels(x*y*z), colors(x*y*z) {
+Model::Model(int x, int y, int z, float size) : size_x(x), size_y(y), size_z(z), voxel_size(size), voxels(x*y*z), colors(x*y*z) {
 	for (int i = 0; i < x*y*z; i++)
 		voxels[i] = Vector4f(50, 168, 141, 1);
 };
