@@ -31,7 +31,7 @@ bool marchingCubes(Model* model, float threshold, std::string outFileName) {
 // Testing
 bool testMarchingCubes() {
 	std::cout << "Testing marching cubes" << std::endl;
-	Model model(4, 4, 4);
+	Model model(4, 4, 4, 1);
 	for (int x = 0; x < model.getX(); x++) {
 		for (int y = 0; y < model.getY(); y++) {
 			for (int z = 0; z < model.getZ(); z++) {

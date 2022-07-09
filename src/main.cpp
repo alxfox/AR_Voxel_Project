@@ -201,7 +201,7 @@ int main(int argc, char* argv[])
 			break;
 		}
 
-		Model model = Model(100, 100, 100);
+		Model model = Model(100, 100, 100, 0.0028);
 
 		cv::Mat cameraMatrix, distCoeffs;
 		if (parser.get<std::string>("calibration").empty())
