@@ -3,9 +3,14 @@
 #include<Eigen/Dense>
 #include "Model.h"
 
-Model::Model(int x, int y, int z, float size) : size_x(x), size_y(y), size_z(z), voxel_size(size), voxels(x*y*z), colors(x*y*z) {
-	for (int i = 0; i < x*y*z; i++)
-		voxels[i] = Vector4f(50, 168, 141, 1);
+#define MODEL_COLOR Vector4f(50, 168, 141, 1)
+#define UNSEEN_COLOR Vector4f(204, 0, 0, 1)
+
+Model::Model(int x, int y, int z, float size) : size_x(x), size_y(y), size_z(z), voxel_size(size), voxels(x*y*z), colors(x*y*z), seen(x*y*z) {
+	for (int i = 0; i < x * y * z; i++) {
+		voxels[i] = MODEL_COLOR;
+		seen[i] = false;
+	}
 };
 
 void Model::set(int x, int y, int z, const Vector4f& v) {
@@ -26,4 +31,17 @@ std::string Model::to_string() {
 		ss << '\n';
 	}
 	return ss.str();
+}
+
+void Model::handleUnseen() {
+	std::cout << "LOG - VC: marking unseen voxels from model." << std::endl;
+	for (int x = 0; x < getX(); x++) {
+		for (int y = 0; y < getY(); y++) {
+			for (int z = 0; z < getZ(); z++) {
+				if (!seen[flatten(x, y, z)]) {
+					set(x, y, z, UNSEEN_COLOR);
+				}
+			}
+		}
+	}
 }
