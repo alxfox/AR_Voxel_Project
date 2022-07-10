@@ -36,7 +36,7 @@ public:
 	}
 
 	cv::Vec4f toWord(int x, int y, int z) {
-		return cv::Vec4f(x * voxel_size, y * voxel_size, -1 * z * voxel_size, 1);
+		return cv::Vec4f(y * voxel_size, x * voxel_size, -1 * z * voxel_size, 1);
 	}
   
 	void addColor(int x, int y, int z, const Vector4f& c) { colors[flatten(x, y, z)].push_back(c); };

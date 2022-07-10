@@ -17,8 +17,12 @@ namespace {
 		"{images        |       | Give the path to the directory containing the images for pose estimation/carving}"
 		"{calibration   |       | Give the path to the result of the camera calibration (eg. kinect_v1.txt)}"
 		"{video_id      | -1    | Give the id to the video stream for which you want to estimate the pose}"
-		"{carve         | 1     | 1 for simple carving, 2 for simple carving with mask filter}"
-		"{masks          |       | Give the path to the directory containing the image masks}"
+		"{carve         | 1     | 1 for simple carving}"
+		"{masks         |       | Give the path to the directory containing the image masks}"
+		"{x             |       | Give the number of voxels in x direction.}"
+		"{y             |       | Give the number of voxels in y direction.}"
+		"{z             |       | Give the number of voxels in z direction.}"
+		"{size          |       | Give the side length of a voxel.}"
 		;
 }
 
@@ -201,7 +205,22 @@ int main(int argc, char* argv[])
 			break;
 		}
 
-		Model model = Model(100, 100, 100, 0.0028);
+		int x = parser.get<int>("x");
+		int y = parser.get<int>("y");
+		int z = parser.get<int>("z");
+		if (x < 1 || y < 1 || z < 1) {
+			std::cerr << "You need to define a valid number of voxels for the model. (--x/--y/--z)";
+			break;
+		}
+
+		float size = parser.get<float>("size");
+		if (size <= 0)
+		{
+			std::cerr << "You need to define a strictly positive voxel size. (--size)";
+			break;
+		}
+		// 100, 100, 100, 0.0028 ~ Caruco
+		Model model = Model(x, y, z, size);
 
 		cv::Mat cameraMatrix, distCoeffs;
 		if (parser.get<std::string>("calibration").empty())
@@ -210,7 +229,6 @@ int main(int argc, char* argv[])
 			break;
 		}
 		loadCalibrationFile(parser.get<std::string>("calibration"), &cameraMatrix, &distCoeffs);
-		std::cout << cameraMatrix << distCoeffs << std::endl;
 		std::cout << "LOG - VC: read carmeraMatrix and distCoefficients." << std::endl;
 
 		carve(cameraMatrix, distCoeffs, model, images, masks);
