@@ -30,6 +30,7 @@ public:
 	int getX() { return size_x; }
 	int getY() { return size_y; }
 	int getZ() { return size_z; }
+	float getSize() { return voxel_size; }
 
     Vector4f get(int x, int y, int z) {
 		if (x < 0 || x >= size_x || y < 0 || y >= size_y || z < 0 || z >= size_z) {
