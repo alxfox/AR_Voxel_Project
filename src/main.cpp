@@ -17,12 +17,12 @@ namespace {
 		"{images        |       | Give the path to the directory containing the images for pose estimation/carving}"
 		"{calibration   |       | Give the path to the result of the camera calibration (eg. kinect_v1.txt)}"
 		"{video_id      | -1    | Give the id to the video stream for which you want to estimate the pose}"
-		"{carve         | 1     | 1 for simple carving}"
+		"{carve         | 1     | 1 for standard carving, 2 for fast carving}"
 		"{masks         |       | Give the path to the directory containing the image masks}"
-		"{x             |       | Give the number of voxels in x direction.}"
-		"{y             |       | Give the number of voxels in y direction.}"
-		"{z             |       | Give the number of voxels in z direction.}"
-		"{size          |       | Give the side length of a voxel.}"
+		"{x             | 100   | Give the number of voxels in x direction.}"
+		"{y             | 100   | Give the number of voxels in y direction.}"
+		"{z             | 100   | Give the number of voxels in z direction.}"
+		"{size          | 0.0028 | Give the side length of a voxel.}"
 		;
 }
 
@@ -166,7 +166,8 @@ int main(int argc, char* argv[])
 	break;
 	case 5:
 	{
-		if (parser.get<int>("carve") < 1 || 2 < parser.get<int>("carve")) {
+		int carveArg = parser.get<int>("carve");
+		if (carveArg < 1 || 2 < carveArg) {
 			std::cerr << "Invalid carve argument.";
 			break;
 		}
@@ -231,7 +232,15 @@ int main(int argc, char* argv[])
 		loadCalibrationFile(parser.get<std::string>("calibration"), &cameraMatrix, &distCoeffs);
 		std::cout << "LOG - VC: read carmeraMatrix and distCoefficients." << std::endl;
 
-		carve(cameraMatrix, distCoeffs, model, images, masks);
+		// carve
+		if (carveArg == 1)
+		{
+			carve(cameraMatrix, distCoeffs, model, images, masks);
+		}
+		else
+		{
+			fastCarve(cameraMatrix, distCoeffs, model, images, masks);
+		}
 
 		marchingCubes(&model);
 	}
