@@ -22,7 +22,8 @@ namespace {
 		"{x             | 100   | Give the number of voxels in x direction.}"
 		"{y             | 100   | Give the number of voxels in y direction.}"
 		"{z             | 100   | Give the number of voxels in z direction.}"
-		"{size          | 0.0028 | Give the side length of a voxel.}"
+		"{size          | 0.0028| Give the side length of a voxel.}"
+		"{scale         | 1.0   | Give the scale factor for the output model}"
 		;
 }
 
@@ -177,6 +178,10 @@ int main(int argc, char* argv[])
 			break;
 		}
 
+		if (parser.get<float>("scale") == 0) {
+			std::cerr << "The programm won't compute stuff for fun! Enter a scale != 0.0" << std::endl;
+		}
+
 		std::vector<std::string> image_filenames;
 		cv::glob(image_dir, image_filenames);
 		std::vector<cv::Mat> images;
@@ -242,7 +247,7 @@ int main(int argc, char* argv[])
 			fastCarve(cameraMatrix, distCoeffs, model, images, masks);
 		}
 
-		marchingCubes(&model);
+		marchingCubes(&model, parser.get<float>("scale"));
 	}
 	break;
 	default:

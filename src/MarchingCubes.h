@@ -57,7 +57,7 @@ public:
 		return m_triangles;
 	}
 
-	bool WriteMesh(const std::string& filename)
+	bool WriteMesh(const std::string& filename, float scaleFactor = 1.f)
 	{
 		// Write off file
 		std::ofstream outFile(filename);
@@ -70,7 +70,7 @@ public:
 		// save vertices
 		for (unsigned int i = 0; i < m_vertices.size(); i++)
 		{
-			outFile << m_vertices[i].x() << " " << m_vertices[i].y() << " " << m_vertices[i].z() << std::endl;
+			outFile << m_vertices[i].x()*scaleFactor << " " << m_vertices[i].y()*scaleFactor << " " << m_vertices[i].z()*scaleFactor << std::endl;
 		}
 
 		// save faces
@@ -513,7 +513,7 @@ static bool ProcessVoxel(Model* model, int x, int y, int z, SimpleMesh* mesh, fl
 	return true;
 }
 
-bool marchingCubes(Model* model, float threshold = 0.5f, std::string outFileName = "out/mesh.off");
+bool marchingCubes(Model* model, float scale = 1.0f, float threshold = 0.5f, std::string outFileName = "out/mesh.off");
 bool testMarchingCubes();
 
 #endif
