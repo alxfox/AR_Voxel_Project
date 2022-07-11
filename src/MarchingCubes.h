@@ -57,7 +57,7 @@ public:
 		return m_triangles;
 	}
 
-	bool WriteMesh(const std::string& filename, float scaleFactor = 1.f)
+	bool WriteMesh(const std::string& filename, float scaleFactor = 1.f, Vector3f translation = Vector3f(0, 0, 0))
 	{
 		// Write off file
 		std::ofstream outFile(filename);
@@ -70,7 +70,7 @@ public:
 		// save vertices
 		for (unsigned int i = 0; i < m_vertices.size(); i++)
 		{
-			outFile << m_vertices[i].x()*scaleFactor << " " << m_vertices[i].y()*scaleFactor << " " << m_vertices[i].z()*scaleFactor << std::endl;
+			outFile << m_vertices[i].x() * scaleFactor + translation.x() << " " << m_vertices[i].y() * scaleFactor + translation.y() << " " << m_vertices[i].z() * scaleFactor + translation.z() << std::endl;
 		}
 
 		// save faces
@@ -410,7 +410,7 @@ static unsigned int MeanColorFloats(float c1, float c2, float c3) {
 static MC_Interpolate VertexInterp(float threshold, const Vector3f& point0, const Vector4f& val0, const Vector3f& point1, const Vector4f& val1) {
 	// TODO: other interpolation necessary?
 	MC_Interpolate ret;
-	
+
 	if (val0.w() == 0.0f && val1.w() != 0.0f) {
 		ret.color = Vector3f(val1.x(), val1.y(), val1.z());
 		ret.coord = point1;
@@ -423,10 +423,10 @@ static MC_Interpolate VertexInterp(float threshold, const Vector3f& point0, cons
 	}
 
 	float interpolateFactor = (threshold - val0.w()) / (val1.w() - val0.w());
-	ret.coord = (1-interpolateFactor) * point0 + interpolateFactor * point1;
+	ret.coord = (1 - interpolateFactor) * point0 + interpolateFactor * point1;
 	Vector3f col0 = Vector3f(val0.x(), val0.y(), val0.z());
 	Vector3f col1 = Vector3f(val1.x(), val1.y(), val1.z());
-	ret.color = (1-interpolateFactor) * col0 + interpolateFactor * col1;
+	ret.color = (1 - interpolateFactor) * col0 + interpolateFactor * col1;
 	return ret;
 }
 
@@ -504,16 +504,16 @@ static bool ProcessVoxel(Model* model, int x, int y, int z, SimpleMesh* mesh, fl
 		vHandle[1] = mesh->AddVertex(v1);
 		vHandle[2] = mesh->AddVertex(v2);
 
-		mesh->AddFace(vHandle[0], vHandle[1], vHandle[2], 
-			MeanColorFloats(tris[i].col[0].x(), tris[i].col[1].x(), tris[i].col[2].x()), 
-			MeanColorFloats(tris[i].col[0].y(), tris[i].col[1].y(), tris[i].col[2].y()), 
+		mesh->AddFace(vHandle[0], vHandle[1], vHandle[2],
+			MeanColorFloats(tris[i].col[0].x(), tris[i].col[1].x(), tris[i].col[2].x()),
+			MeanColorFloats(tris[i].col[0].y(), tris[i].col[1].y(), tris[i].col[2].y()),
 			MeanColorFloats(tris[i].col[0].z(), tris[i].col[1].z(), tris[i].col[2].z()));
 	}
 
 	return true;
 }
 
-bool marchingCubes(Model* model, float scale = 1.0f, float threshold = 0.5f, std::string outFileName = "out/mesh.off");
+bool marchingCubes(Model* model, float scale = 1.0f, Vector3f translation = Vector3f(0, 0, 0), float threshold = 0.5f, std::string outFileName = "out/mesh.off");
 bool testMarchingCubes();
 
 #endif

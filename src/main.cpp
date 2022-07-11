@@ -23,7 +23,10 @@ namespace {
 		"{y             | 100   | Give the number of voxels in y direction.}"
 		"{z             | 100   | Give the number of voxels in z direction.}"
 		"{size          | 0.0028| Give the side length of a voxel.}"
-		"{scale         | 1.0   | Give the scale factor for the output model}"
+		"{scale         | 1.0   | Give the scale factor for the output model.}"
+		"{dx            | 0.0   | Move model in x direction (unscaled).}"
+		"{dy            | 0.0   | Move model in y direction (unscaled).}"
+		"{dz            | 0.0   | Move model in z direction (unscaled).}"
 		;
 }
 
@@ -247,7 +250,8 @@ int main(int argc, char* argv[])
 			fastCarve(cameraMatrix, distCoeffs, model, images, masks);
 		}
 
-		marchingCubes(&model, parser.get<float>("scale"));
+		Vector3f modelTranslation = Vector3f(parser.get<float>("dx"), parser.get<float>("dy"), parser.get<float>("dz"));
+		marchingCubes(&model, parser.get<float>("scale"), modelTranslation);
 	}
 	break;
 	default:
