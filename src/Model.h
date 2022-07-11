@@ -6,6 +6,11 @@
 
 using Eigen::Vector4f;
 
+typedef struct DCLR {
+	Vector4f color;
+	float depth;
+};
+
 class Model
 {
 private:
@@ -14,7 +19,7 @@ private:
 	const int size_z;
 	const float voxel_size;
 	std::vector<Vector4f> voxels;
-	std::vector<std::vector<Vector4f>> colors;
+	std::vector<std::vector<DCLR>> colors;
 	std::vector<bool> seen;
 
 	int flatten(int x, int y, int z) { 
@@ -46,8 +51,11 @@ public:
 		return cv::Vec4f(v(1) * voxel_size, v(0) * voxel_size, -1 * v(2) * voxel_size, 1);
 	}
   
-	void addColor(int x, int y, int z, const Vector4f& c) { colors[flatten(x, y, z)].push_back(c); };
-	void see(int x, int y, int z) { seen[flatten(x, y, z)] = true; }
+	void addColor(int x, int y, int z, const Vector4f& color, float depth) {
+		DCLR c = { color, depth };
+		colors[flatten(x, y, z)].push_back(c);
+	};
+	void see(int x, int y, int z) { seen[flatten(x, y, z)] = true;}
 	void handleUnseen();
 
 	void visit(cv::Vec3i v) {
