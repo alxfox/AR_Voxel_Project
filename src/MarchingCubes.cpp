@@ -4,7 +4,7 @@
 
 #include "MarchingCubes.h"
 
-bool marchingCubes(Model* model, float scale, float threshold, std::string outFileName) {
+bool marchingCubes(Model* model, float scale, Vector3f translation, float threshold, std::string outFileName) {
 	std::cout << "LOG - MC: starting to process Voxels." << std::endl;
 	model->handleUnseen();
 	SimpleMesh mesh;
@@ -15,10 +15,10 @@ bool marchingCubes(Model* model, float scale, float threshold, std::string outFi
 			}
 		}
 	}
-	std::cout << "LOG - MC: voxel processing completed." << std::endl;
+	std::cout << "LOG - MC: voxel processing completed.\n Writing mesh..." << std::endl;
 
 	// write mesh to file
-	if (!mesh.WriteMesh(outFileName, scale * model->getSize())) {
+	if (!mesh.WriteMesh(outFileName, scale * model->getSize(), translation)) {
 		std::cout << "ERR - MC: unable to write output file!" << std::endl;
 		return false;
 	}
