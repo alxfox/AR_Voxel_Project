@@ -6,7 +6,6 @@
 
 bool marchingCubes(Model* model, float scale, Vector3f translation, float threshold, std::string outFileName) {
 	std::cout << "LOG - MC: starting to process Voxels." << std::endl;
-	model->handleUnseen();
 	SimpleMesh mesh;
 	for (int x = -1; x < model->getX(); x++) {
 		for (int y = -1; y < model->getY(); y++) {
