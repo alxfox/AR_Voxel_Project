@@ -426,7 +426,18 @@ static MC_Interpolate VertexInterp(float threshold, const Vector3f& point0, cons
 	ret.coord = (1 - interpolateFactor) * point0 + interpolateFactor * point1;
 	Vector3f col0 = Vector3f(val0.x(), val0.y(), val0.z());
 	Vector3f col1 = Vector3f(val1.x(), val1.y(), val1.z());
-	ret.color = (1 - interpolateFactor) * col0 + interpolateFactor * col1;
+	if (col0 == MODEL_COLOR.head(3) || col0 == UNSEEN_COLOR.head(3))
+	{
+		ret.color = col1;
+	}
+	else if (col1 == MODEL_COLOR.head(3) || col1 == UNSEEN_COLOR.head(3))
+	{
+		ret.color = col0;
+	}
+	else
+	{
+		ret.color = (1 - interpolateFactor) * col0 + interpolateFactor * col1;
+	}
 	return ret;
 }
 

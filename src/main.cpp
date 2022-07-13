@@ -5,6 +5,7 @@
 #include "PoseEstimation.h"
 #include "Segmentation.h"
 #include "VoxelCarving.h"
+#include "ColorReconstruction.h"
 #include "MarchingCubes.h"
 #include "Postprocessing3d.h"
 namespace fs = std::filesystem;
@@ -24,6 +25,7 @@ namespace {
 		"{y             | 100   | Give the number of voxels in y direction.}"
 		"{z             | 100   | Give the number of voxels in z direction.}"
 		"{size          | 0.0028| Give the side length of a voxel.}"
+		"{color         | 0     | 0 for no color reconstruction, 1 for nearest camera.}"
 		"{scale         | 1.0   | Give the scale factor for the output model.}"
 		"{dx            | 0.0   | Move model in x direction (unscaled).}"
 		"{dy            | 0.0   | Move model in y direction (unscaled).}"
@@ -242,13 +244,32 @@ int main(int argc, char* argv[])
 		std::cout << "LOG - VC: read carmeraMatrix and distCoefficients." << std::endl;
 
 		// carve
-		if (carveArg == 1)
+		switch (carveArg)
 		{
-			carve(cameraMatrix, distCoeffs, model, images, masks);
+			case 1: carve(cameraMatrix, distCoeffs, model, images, masks);
+				break;
+			case 2: fastCarve(cameraMatrix, distCoeffs, model, images, masks);
+				break;
+			default:
+				std::cerr << "Ups, something went wrong!" << std::endl;
 		}
-		else
+
+		// color reconstruction
+		int color = parser.get<int>("color");
+		if (color < 0 || 1 < color)
 		{
-			fastCarve(cameraMatrix, distCoeffs, model, images, masks);
+			std::cerr << "You need to select a predefined color reconstruction mode. (--color)";
+			break;
+		}
+
+		switch (color)
+		{
+			case 0:
+				break;
+			case 1: reconstructColor(cameraMatrix, distCoeffs, model, images, masks);
+				break;
+			default:
+				std::cerr << "Ups, something went wrong!" << std::endl;
 		}
 
 		//apply postprocessing

@@ -23,6 +23,7 @@ set(HEADERS
     src/Segmentation.h
     src/MarchingCubes.h
     src/VoxelCarving.h
+    src/ColorReconstruction.h
     src/Postprocessing3d.h
 )
 
@@ -31,6 +32,7 @@ set(SOURCES
     src/Model.cpp
     src/MarchingCubes.cpp
     src/VoxelCarving.cpp
+    src/ColorReconstruction.cpp
     src/Postprocessing3d.cpp
 )
 
