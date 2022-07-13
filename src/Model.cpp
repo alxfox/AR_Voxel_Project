@@ -3,9 +3,6 @@
 #include<Eigen/Dense>
 #include "Model.h"
 
-#define MODEL_COLOR Vector4f(50, 168, 141, 1)
-#define UNSEEN_COLOR Vector4f(204, 0, 0, 1)
-
 Model::Model(int x, int y, int z, float size) : size_x(x), size_y(y), size_z(z), voxel_size(size), voxels(x*y*z), colors(x*y*z), seen(x*y*z) {
 	for (int i = 0; i < x * y * z; i++) {
 		voxels[i] = MODEL_COLOR;

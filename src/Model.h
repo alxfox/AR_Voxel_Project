@@ -11,6 +11,9 @@ typedef struct DCLR {
 	float depth;
 };
 
+#define MODEL_COLOR Vector4f(255, 255, 255, 1) // Vector4f(50, 168, 141, 1)
+#define UNSEEN_COLOR Vector4f(255, 255, 255, 1) // Vector4f(204, 0, 0, 1)
+
 class Model
 {
 private:
@@ -44,6 +47,14 @@ public:
 		return voxels[flatten(x, y, z)]; 
 	}
 
+	bool isInner(int x, int y, int z) {
+		return (
+			get(x - 1, y, z)(3) != 0 && get(x + 1, y, z)(3) != 0 &&
+			get(x, y - 1, z)(3) != 0 && get(x, y + 1, z)(3) != 0 &&
+			get(x, y, z - 1)(3) != 0 && get(x, y, z + 1)(3) != 0
+		);
+	}
+
 	cv::Vec4f toWord(int x, int y, int z) {
 		return cv::Vec4f(y * voxel_size, x * voxel_size, -1 * z * voxel_size, 1);
 	}
@@ -56,6 +67,11 @@ public:
 		DCLR c = { color, depth };
 		colors[flatten(x, y, z)].push_back(c);
 	};
+
+	std::vector<DCLR> getColors(int x, int y, int z) {
+		return colors[flatten(x, y, z)];
+	}
+
 	void see(int x, int y, int z) { seen[flatten(x, y, z)] = true;}
 	void handleUnseen();
 
