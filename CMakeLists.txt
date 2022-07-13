@@ -24,6 +24,7 @@ set(HEADERS
     src/MarchingCubes.h
     src/VoxelCarving.h
     src/ColorReconstruction.h
+    src/Postprocessing3d.h
 )
 
 set(SOURCES
@@ -32,6 +33,7 @@ set(SOURCES
     src/MarchingCubes.cpp
     src/VoxelCarving.cpp
     src/ColorReconstruction.cpp
+    src/Postprocessing3d.cpp
 )
 
 add_executable(voxel_project ${HEADERS} ${SOURCES})

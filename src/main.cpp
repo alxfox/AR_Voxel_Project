@@ -1,12 +1,13 @@
 #include <vector>
 #include <iostream>
+#include <filesystem>
 #include "Calibration.h"
 #include "PoseEstimation.h"
 #include "Segmentation.h"
 #include "VoxelCarving.h"
 #include "ColorReconstruction.h"
 #include "MarchingCubes.h"
-#include <filesystem>
+#include "Postprocessing3d.h"
 namespace fs = std::filesystem;
 namespace {
 	const char* about =
@@ -271,7 +272,11 @@ int main(int argc, char* argv[])
 				std::cerr << "Ups, something went wrong!" << std::endl;
 		}
 
-		// model to mesh
+		//apply postprocessing
+		model.handleUnseen();
+		applyClosure(&model, 3);
+
+		//generate triangle mesh
 		Vector3f modelTranslation = Vector3f(parser.get<float>("dx"), parser.get<float>("dy"), parser.get<float>("dz"));
 		marchingCubes(&model, parser.get<float>("scale"), modelTranslation);
 	}
