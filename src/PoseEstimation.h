@@ -65,7 +65,7 @@ static cv::Mat estimatePoseFromImage(cv::Mat cameraMatrix, cv::Mat distCoeffs, c
                 transformation_matrix.at<float>(2, 1) = rotation_matrix.at<double>(2, 1);
                 transformation_matrix.at<float>(2, 2) = rotation_matrix.at<double>(2, 2);
                 transformation_matrix.at<float>(2, 3) = translation.at<double>(0, 2);
-                std::cout << rotation_matrix << std::endl;
+                // std::cout << rotation_matrix << std::endl;
         }
     }
     if (visualize){

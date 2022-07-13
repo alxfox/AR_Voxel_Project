@@ -1,6 +1,7 @@
 #include "Postprocessing3d.h"
 #include <iostream>
 int applyClosure(Model* model, int kernelSize) {
+	std::cout << "LOG - PP: starting postprocessing." << std::endl;
 	float thresh = 0;
 	if (kernelSize % 2 != 1) {
 		std::cerr << "Invalid kernel size for post processing, skipping..." << std::endl;
@@ -11,7 +12,7 @@ int applyClosure(Model* model, int kernelSize) {
 	int y_size = model->getY();
 	int z_size = model->getZ();
 	Model temp(x_size, y_size, z_size,1.f);
-	std::cout << "starting dilution..." << std::endl;
+	std::cout << "LOG - PP: starting dilution." << std::endl;
 	int counter = 0;
 	//dilution
 	for (int x = 0; x < x_size; x++) {
@@ -54,6 +55,7 @@ int applyClosure(Model* model, int kernelSize) {
 		}
 	}
 	//erosion
+	std::cout << "LOG - PP: starting erosion." << std::endl;
 	for (int x = 0; x < x_size; x++) {
 		for (int y = 0; y < y_size; y++) {
 			for (int z = 0; z < z_size; z++) {
@@ -90,5 +92,6 @@ int applyClosure(Model* model, int kernelSize) {
 			}
 		}
 	}
+	std::cout << "LOG - PP: postprocessing completed." << std::endl;
 	return 0;
 }

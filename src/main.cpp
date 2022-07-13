@@ -30,6 +30,8 @@ namespace {
 		"{dx            | 0.0   | Move model in x direction (unscaled).}"
 		"{dy            | 0.0   | Move model in y direction (unscaled).}"
 		"{dz            | 0.0   | Move model in z direction (unscaled).}"
+		"{model_debug   | false | Whether to generate a raw cube-mesh of the model.}"
+		"{postprocessing | true  | Whether to apply posprocessing on the model.}"
 		;
 }
 
@@ -264,17 +266,24 @@ int main(int argc, char* argv[])
 
 		switch (color)
 		{
-			case 0:
-				break;
-			case 1: reconstructColor(cameraMatrix, distCoeffs, model, images, masks);
-				break;
-			default:
-				std::cerr << "Ups, something went wrong!" << std::endl;
+		case 0:
+			break;
+		case 1: reconstructColor(cameraMatrix, distCoeffs, model, images, masks);
+			break;
+		default:
+			std::cerr << "Ups, something went wrong!" << std::endl;
 		}
 
 		//apply postprocessing
 		model.handleUnseen();
-		applyClosure(&model, 3);
+		
+		if (parser.get<bool>("model_debug")) {
+			model.WriteModel();
+		}
+
+		if (parser.get<bool>("postprocessing")) {
+			applyClosure(&model, 3);
+		}
 
 		//generate triangle mesh
 		Vector3f modelTranslation = Vector3f(parser.get<float>("dx"), parser.get<float>("dy"), parser.get<float>("dz"));

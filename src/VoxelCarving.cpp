@@ -54,14 +54,14 @@ static void carve(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, cv::
 }
 
 void carve(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, std::vector<cv::Mat>& images, std::vector<cv::Mat>& masks) {
-    std::cout << "LOG - VC: starting carving process." << std::endl;
+    std::cout << "LOG - VC: starting carving process (version 1)." << std::endl;
     for (int i = 0; i < images.size(); i++)
         carve(cameraMatrix, distCoeffs, model, images[i], masks[i]);
     std::cout << "LOG - VC: carving complete." << std::endl;
 }
 
 void fastCarve(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, std::vector<cv::Mat>& images, std::vector<cv::Mat>& masks) {
-    std::cout << "LOG - VC: starting carving process." << std::endl;
+    std::cout << "LOG - VC: starting carving process (version 2)." << std::endl;
 
     // Estimate pose for each image and remove distortion from images/masks
     std::vector<cv::Mat> poses;
