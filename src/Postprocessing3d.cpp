@@ -1,7 +1,9 @@
 #include "Postprocessing3d.h"
+#include "Benchmark.h"
 #include <iostream>
 int applyClosure(Model* model, int kernelSize) {
 	std::cout << "LOG - PP: starting postprocessing." << std::endl;
+	Benchmark::GetInstance().LogPostProcessing(true);
 	float thresh = 0;
 	if (kernelSize % 2 != 1) {
 		std::cerr << "Invalid kernel size for post processing, skipping..." << std::endl;
@@ -92,6 +94,7 @@ int applyClosure(Model* model, int kernelSize) {
 			}
 		}
 	}
+	Benchmark::GetInstance().LogPostProcessing(false);
 	std::cout << "LOG - PP: postprocessing completed." << std::endl;
 	return 0;
 }

@@ -13,7 +13,7 @@
 #define TIME(performance) \
 	(performance.end - performance.start).count()
 
-typedef struct Performance {
+struct Performance {
 	std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
 	std::chrono::system_clock::time_point end = start;
 };
@@ -27,9 +27,11 @@ private:
 		coloring = std::vector<Performance>();
 		postProcessing = std::vector<Performance>();
 		marchingCubes = std::vector<Performance>();
+		overall = std::vector<Performance>();
+		NextRun("dummy", Eigen::Vector4f());
 	}
 
-	static Benchmark* benchmark_;
+	//static Benchmark* instance;
 
 	std::vector<std::string> runNames;
 	std::vector<Eigen::Vector4f> modelSizes;
@@ -39,12 +41,20 @@ private:
 	std::vector<Performance> postProcessing;
 	std::vector<Performance> marchingCubes;
 
+	std::vector<Performance> overall;
+
 public:
-	static Benchmark& instance() {
-		if (benchmark_ == nullptr) {
-			benchmark_ = new Benchmark();
-		}
-		return *benchmark_;
+	Benchmark(Benchmark const&) = delete;
+
+	void operator=(Benchmark const&) = delete;
+
+	static Benchmark& GetInstance() {
+		static Benchmark instance;
+		/**
+		if (instance == nullptr) {
+			instance = new Benchmark();
+		}*/
+		return instance;
 	}
 
 	void NextRun(const std::string& runName, Eigen::Vector4f modelSize) {
@@ -54,37 +64,43 @@ public:
 		coloring.push_back(Performance());
 		postProcessing.push_back(Performance());
 		marchingCubes.push_back(Performance());
+		overall.push_back(Performance());
 	}
 
 	void LogCarving(bool start) {
-		PERFORMANCE_LOG(carving.back(), start)
+		PERFORMANCE_LOG(carving.back(), start);
 	}
 
 	void LogColoring(bool start) {
-		PERFORMANCE_LOG(coloring.back(), start)
+		PERFORMANCE_LOG(coloring.back(), start);
 	}
 
 	void LogPostProcessing(bool start) {
-		PERFORMANCE_LOG(postProcessing.back(), start)
+		PERFORMANCE_LOG(postProcessing.back(), start);
 	}
 
 	void LogMarchingCubes(bool start) {
-		PERFORMANCE_LOG(marchingCubes.back(), start)
+		PERFORMANCE_LOG(marchingCubes.back(), start);
+	}
+
+	void LogOverall(bool start) {
+		PERFORMANCE_LOG(overall.back(), start);
 	}
 
 	std::string to_string() {
 		std::ostringstream ss;
-		ss << "Benchmark" << std::endl << std::endl;
-		ss << "Name\t" << "|  Model size (x,y,z, voxel size)\t" << "|  Carving time\t" << "|  Coloring time\t" <<
-			"|  Postprocessing time\t" << "|  Marching cubes time" << std::endl;
-		for (int i = 0; i < 50; i++) {
+		ss << std::endl << "Benchmark (all times in millisekonds)" << std::endl;
+		ss << "Name\t\t\t\t" << "|  Model size (x,y,z, voxel size)\t" << "|  Carving time\t" << "|  Coloring time\t" <<
+			"|  Postprocessing time\t" << "|  Marching cubes time\t" << "|  Overall time" << std::endl;
+		for (int i = 0; i < 190; i++) {
 			ss << "-";
 		}
-
-		for (int i = 0; i < runNames.size(); i++) {
+		ss << std::endl;
+		for (int i = 1; i < runNames.size(); i++) {
 			ss << runNames.at(i) << "\t|  " <<
-				modelSizes.at(i).x() << "x" << modelSizes.at(i).y() << "x" << modelSizes.at(i).z() << ", " << modelSizes.at(i)(3) << "\t|  " <<
-				TIME(carving.at(i)) << "\t|  " << TIME(coloring.at(i)) << "\t|  " << TIME(postProcessing.at(i)) << "\t|  " << TIME(marchingCubes.at(i)) << std::endl;
+				modelSizes.at(i).x() << "x" << modelSizes.at(i).y() << "x" << modelSizes.at(i).z() << ", " << modelSizes.at(i)(3) << "\t\t\t|  " <<
+				TIME(carving.at(i)) << "\t|  " << TIME(coloring.at(i)) << "\t\t|  " << TIME(postProcessing.at(i)) << "\t\t|  " <<
+				TIME(marchingCubes.at(i)) << "\t\t|  " << TIME(overall.at(i)) << std::endl;
 		}
 
 		return ss.str();

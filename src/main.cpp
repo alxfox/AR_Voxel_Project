@@ -8,6 +8,7 @@
 #include "ColorReconstruction.h"
 #include "MarchingCubes.h"
 #include "Postprocessing3d.h"
+#include "Benchmark.h"
 namespace fs = std::filesystem;
 namespace {
 	const char* about =
@@ -335,7 +336,76 @@ int main(int argc, char* argv[])
 		loadCalibrationFile(parser.get<std::string>("calibration"), &cameraMatrix, &distCoeffs);
 		std::cout << "LOG - Benchmark: read carmeraMatrix and distCoefficients." << std::endl;
 
+		std::filesystem::create_directories("./out/bench");
 		// perform benchmarks here
+		// small, v1, def. coloring
+		Benchmark::GetInstance().NextRun("Small, V1, def. coloring", Vector4f(10, 10, 5, 0.028f));
+		Benchmark::GetInstance().LogOverall(true);
+		Model model = Model(10, 10, 5, 0.028f);
+		carve(cameraMatrix, distCoeffs, model, images, masks);
+		reconstructColor(cameraMatrix, distCoeffs, model, images, masks);
+		model.handleUnseen();
+		applyClosure(&model, 3);
+		Vector3f modelTranslation = Vector3f(parser.get<float>("dx"), parser.get<float>("dy"), parser.get<float>("dz"));
+		marchingCubes(&model, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_small_1_def.off");
+		Benchmark::GetInstance().LogOverall(false);
+
+		// medium, v1, def. coloring
+		Benchmark::GetInstance().NextRun("Medium, V1, def. coloring", Vector4f(50, 50, 25, 0.0056f));
+		Benchmark::GetInstance().LogOverall(true);
+		Model model2 = Model(50, 50, 25, 0.0056f);
+		carve(cameraMatrix, distCoeffs, model2, images, masks);
+		reconstructColor(cameraMatrix, distCoeffs, model2, images, masks);
+		model2.handleUnseen();
+		applyClosure(&model2, 3);
+		marchingCubes(&model2, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_medium_1_def.off");
+		Benchmark::GetInstance().LogOverall(false);
+
+		// large, v1, def. coloring
+		Benchmark::GetInstance().NextRun("Large, V1, def. coloring", Vector4f(100, 100, 50, 0.0028f));
+		Benchmark::GetInstance().LogOverall(true);
+		Model model3 = Model(50, 50, 25, 0.0056f);
+		carve(cameraMatrix, distCoeffs, model3, images, masks);
+		reconstructColor(cameraMatrix, distCoeffs, model3, images, masks);
+		model3.handleUnseen();
+		applyClosure(&model3, 3);
+		marchingCubes(&model3, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_large_1_def.off");
+		Benchmark::GetInstance().LogOverall(false);
+
+		// large, v2, def. coloring
+		Benchmark::GetInstance().NextRun("Large, V2, def. coloring", Vector4f(100, 100, 50, 0.0028f));
+		Benchmark::GetInstance().LogOverall(true);
+		Model model4 = Model(50, 50, 25, 0.0056f);
+		fastCarve(cameraMatrix, distCoeffs, model4, images, masks);
+		reconstructColor(cameraMatrix, distCoeffs, model4, images, masks);
+		model4.handleUnseen();
+		applyClosure(&model4, 3);
+		marchingCubes(&model4, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_large_2_def.off");
+		Benchmark::GetInstance().LogOverall(false);
+
+		// large, v2, closest color
+		Benchmark::GetInstance().NextRun("Large, V2, closest color", Vector4f(100, 100, 50, 0.0028f));
+		Benchmark::GetInstance().LogOverall(true);
+		Model model5 = Model(50, 50, 25, 0.0056f);
+		fastCarve(cameraMatrix, distCoeffs, model5, images, masks);
+		reconstructClosestColor(cameraMatrix, distCoeffs, model5, images, masks);
+		model5.handleUnseen();
+		applyClosure(&model5, 3);
+		marchingCubes(&model5, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_large_2_closest.off");
+		Benchmark::GetInstance().LogOverall(false);
+
+		// large, v2, avg. color
+		Benchmark::GetInstance().NextRun("Large, V2, avg. color\t", Vector4f(100, 100, 50, 0.0028f));
+		Benchmark::GetInstance().LogOverall(true);
+		Model model6 = Model(50, 50, 25, 0.0056f);
+		fastCarve(cameraMatrix, distCoeffs, model6, images, masks);
+		reconstructAvgColor(cameraMatrix, distCoeffs, model6, images, masks);
+		model6.handleUnseen();
+		applyClosure(&model6, 3);
+		marchingCubes(&model6, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_large_2_avg.off");
+		Benchmark::GetInstance().LogOverall(false);
+
+		std::cout << Benchmark::GetInstance().to_string() << std::endl;
 	}
 	break;
 	default:

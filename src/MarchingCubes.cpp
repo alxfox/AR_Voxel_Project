@@ -3,9 +3,11 @@
 #include<iostream>
 
 #include "MarchingCubes.h"
+#include "Benchmark.h"
 
 bool marchingCubes(Model* model, float scale, Vector3f translation, float threshold, std::string outFileName) {
 	std::cout << "LOG - MC: starting to process Voxels." << std::endl;
+	Benchmark::GetInstance().LogMarchingCubes(true);
 	SimpleMesh mesh;
 	for (int x = -1; x < model->getX(); x++) {
 		for (int y = -1; y < model->getY(); y++) {
@@ -14,6 +16,7 @@ bool marchingCubes(Model* model, float scale, Vector3f translation, float thresh
 			}
 		}
 	}
+	Benchmark::GetInstance().LogMarchingCubes(false);
 	std::cout << "LOG - MC: voxel processing completed.\n Writing mesh..." << std::endl;
 
 	// write mesh to file

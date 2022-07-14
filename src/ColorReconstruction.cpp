@@ -4,6 +4,7 @@
 #include "aruco_samples_utility.hpp"
 #include "PoseEstimation.h"
 #include "Segmentation.h"
+#include "Benchmark.h"
 
 static cv::Vec3f worldToCamera(cv::Vec4f world, cv::Mat& pose, cv::Mat& intr) {
     cv::Mat1f proj = intr * pose * world;
@@ -12,7 +13,7 @@ static cv::Vec3f worldToCamera(cv::Vec4f world, cv::Mat& pose, cv::Mat& intr) {
 
 void reconstructColor(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, std::vector<cv::Mat>& images, std::vector<cv::Mat>& masks) {
     std::cout << "LOG - CR: starting color reconstruction." << std::endl;
-
+    Benchmark::GetInstance().LogColoring(true);
     cv::Mat intr = cameraMatrix.clone();
     intr.convertTo(intr, CV_32F);
 
@@ -73,11 +74,13 @@ void reconstructColor(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, 
             }
         }
     }
-
+    Benchmark::GetInstance().LogColoring(false);
     std::cout << "LOG - CR: color reconstruction finished." << std::endl;
 }
 
 void reconstructClosestColor(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, std::vector<cv::Mat>& images, std::vector<cv::Mat>& masks) {
+    std::cout << "LOG - CR: starting color reconstruction (closest color)." << std::endl;
+    Benchmark::GetInstance().LogColoring(true);
     int x = 0, y = 0, z = 0;
     voxel_pass(x, y, z, cameraMatrix, distCoeffs, model, images, masks)
     {   
@@ -95,9 +98,13 @@ void reconstructClosestColor(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& 
         model.set(x, y, z, min.color);
 
     }
+    Benchmark::GetInstance().LogColoring(false);
+    std::cout << "LOG - CR: color reconstruction finished." << std::endl;
 }
 
 void reconstructAvgColor(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, std::vector<cv::Mat>& images, std::vector<cv::Mat>& masks) {
+    std::cout << "LOG - CR: starting color reconstruction (average color)." << std::endl;
+    Benchmark::GetInstance().LogColoring(true);
     int x = 0, y = 0, z = 0;
     voxel_pass(x, y, z, cameraMatrix, distCoeffs, model, images, masks)
     {
@@ -113,4 +120,6 @@ void reconstructAvgColor(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& mode
         Vector4f avg = sum / colors.size();
         model.set(x, y, z, Vector4f(std::round(avg.x()), std::round(avg.y()), std::round(avg.z()), 1));
     }
+    Benchmark::GetInstance().LogColoring(false);
+    std::cout << "LOG - CR: color reconstruction finished." << std::endl;
 }
