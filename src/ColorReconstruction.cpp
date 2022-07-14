@@ -28,9 +28,7 @@ void reconstructColor(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, 
         cameras.push_back(cv::Vec4f(poses[i].at<float>(0, 3), poses[i].at<float>(1, 3), poses[i].at<float>(2, 3), 1));
         cv::Mat undist_img;
         cv::undistort(images[i], undist_img, cameraMatrix, distCoeffs);
-        cv::Mat undist_rgb_img;
-        cv::cvtColor(undist_img, undist_rgb_img, cv::COLOR_BGR2RGB);
-        undist_imgs.push_back(undist_rgb_img);
+        undist_imgs.push_back(undist_img);
         cv::Mat undist_mask;
         cv::undistort(masks[i], undist_mask, cameraMatrix, distCoeffs);
         undist_masks.push_back(undist_mask);
@@ -56,13 +54,9 @@ void reconstructColor(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, 
                     {
                         continue;
                     }
-                    cv::Vec3b pixel = undist_masks[i].at<cv::Vec3b>(pixel_pos);
-                    if (pixel(0) == 0 && pixel(1) == 0 && pixel(2) == 0) // masked pixel -> set alpha = 0
-                    {
-                        continue;
-                    }
-                    pixel = undist_imgs[i].at<cv::Vec3b>(pixel_pos);
-                    model.addColor(x, y, z, Eigen::Vector4f(pixel(0), pixel(1), pixel(2), 1), cv::norm(cameras[i] - word_coord));
+                    cv::Vec3b pixel = undist_imgs[i].at<cv::Vec3b>(pixel_pos);
+                    // convert BGR pixel to RGB and add to color candidates
+                    model.addColor(x, y, z, Eigen::Vector4f(pixel(2), pixel(1), pixel(0), 1), cv::norm(cameras[i] - word_coord));
                 }
                 std::vector<DCLR> colors = model.getColors(x, y, z);
                 if (colors.size() == 0) {
@@ -81,4 +75,42 @@ void reconstructColor(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, 
     }
 
     std::cout << "LOG - CR: color reconstruction finished." << std::endl;
+}
+
+void reconstructClosestColor(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, std::vector<cv::Mat>& images, std::vector<cv::Mat>& masks) {
+    int x = 0, y = 0, z = 0;
+    voxel_pass(x, y, z, cameraMatrix, distCoeffs, model, images, masks)
+    {   
+        std::vector<DCLR> colors = model.getColors(x, y, z);
+        if (colors.size() == 0) {
+            continue;
+        }
+        DCLR min = colors[0];
+        for (int i = 1; i < colors.size(); i++) {
+            if (colors[i].depth < min.depth)
+            {
+                min = colors[i];
+            }
+        }
+        model.set(x, y, z, min.color);
+
+    }
+}
+
+void reconstructAvgColor(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, std::vector<cv::Mat>& images, std::vector<cv::Mat>& masks) {
+    int x = 0, y = 0, z = 0;
+    voxel_pass(x, y, z, cameraMatrix, distCoeffs, model, images, masks)
+    {
+        std::vector<DCLR> colors = model.getColors(x, y, z);
+        if (colors.size() == 0) {
+            continue;
+        }
+        Vector4f sum = Vector4f(0, 0, 0, 1);
+        for (DCLR& c : colors)
+        {
+            sum = sum + c.color;
+        }
+        Vector4f avg = sum / colors.size();
+        model.set(x, y, z, Vector4f(std::round(avg.x()), std::round(avg.y()), std::round(avg.z()), 1));
+    }
 }
