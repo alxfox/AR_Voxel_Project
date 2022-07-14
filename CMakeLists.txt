@@ -25,6 +25,7 @@ set(HEADERS
     src/VoxelCarving.h
     src/ColorReconstruction.h
     src/Postprocessing3d.h
+    src/Benchmark.h
 )
 
 set(SOURCES

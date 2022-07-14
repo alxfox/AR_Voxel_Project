@@ -13,7 +13,7 @@ namespace {
 	const char* about =
 		"AR Voxel Carving Project\n";
 	const char* keys =
-		"{c        		|       | 1 for AruCo board creation, 2 for camera calibration, 3 for pose estimation, 5 for carving}"
+		"{c        		|       | 1 for AruCo board creation, 2 for camera calibration, 3 for pose estimation, 5 for carving, 6 for predefined benchmarking}"
 		"{resize        | 1.0   | Resize the image preview during calibration by this factor}"
 		"{live          | true  | Whether to use live camera calibration, otherwise images will be taken from ../Data/calib_%02d.jpg}"
 		"{images        |       | Give the path to the directory containing the images for pose estimation/carving}"
@@ -248,12 +248,12 @@ int main(int argc, char* argv[])
 		// carve
 		switch (carveArg)
 		{
-			case 1: carve(cameraMatrix, distCoeffs, model, images, masks);
-				break;
-			case 2: fastCarve(cameraMatrix, distCoeffs, model, images, masks);
-				break;
-			default:
-				std::cerr << "Ups, something went wrong!" << std::endl;
+		case 1: carve(cameraMatrix, distCoeffs, model, images, masks);
+			break;
+		case 2: fastCarve(cameraMatrix, distCoeffs, model, images, masks);
+			break;
+		default:
+			std::cerr << "Ups, something went wrong!" << std::endl;
 		}
 
 		// color reconstruction
@@ -276,7 +276,7 @@ int main(int argc, char* argv[])
 
 		//apply postprocessing
 		model.handleUnseen();
-		
+
 		if (parser.get<bool>("model_debug")) {
 			model.WriteModel();
 		}
@@ -288,6 +288,50 @@ int main(int argc, char* argv[])
 		//generate triangle mesh
 		Vector3f modelTranslation = Vector3f(parser.get<float>("dx"), parser.get<float>("dy"), parser.get<float>("dz"));
 		marchingCubes(&model, parser.get<float>("scale"), modelTranslation);
+	}
+	break;
+	case 6:
+	{
+		std::string image_dir = parser.get<std::string>("images");
+		if (image_dir.empty()) {
+			std::cerr << "You need to define a images path (--images)" << std::endl;
+			break;
+		}
+		
+		std::vector<std::string> image_filenames;
+		cv::glob(image_dir, image_filenames);
+		std::vector<cv::Mat> images;
+		for (int i = 0; i < image_filenames.size(); i++) {
+			images.push_back(cv::imread(image_filenames[i], 1));
+		}
+
+		std::cout << "LOG - Benchmark: images read." << std::endl;
+
+		std::string masks_dir = parser.get<std::string>("masks");
+		if (masks_dir.empty()) {
+			std::cerr << "You need to define a image masks path (--masks)" << std::endl;
+			break;
+		}
+
+		std::vector<std::string> mask_filenames;
+		cv::glob(masks_dir, mask_filenames);
+		std::vector<cv::Mat> masks;
+		for (int i = 0; i < mask_filenames.size(); i++) {
+			masks.push_back(cv::imread(mask_filenames[i], 1));
+		}
+
+		std::cout << "LOG - Benchmark: masks read." << std::endl;
+
+		cv::Mat cameraMatrix, distCoeffs;
+		if (parser.get<std::string>("calibration").empty())
+		{
+			std::cerr << "You need to define the path to the calibration file (--calibration)" << std::endl;
+			break;
+		}
+		loadCalibrationFile(parser.get<std::string>("calibration"), &cameraMatrix, &distCoeffs);
+		std::cout << "LOG - Benchmark: read carmeraMatrix and distCoefficients." << std::endl;
+
+		// perform benchmarks here
 	}
 	break;
 	default:
