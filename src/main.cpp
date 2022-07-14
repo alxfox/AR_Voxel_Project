@@ -258,7 +258,7 @@ int main(int argc, char* argv[])
 
 		// color reconstruction
 		int color = parser.get<int>("color");
-		if (color < 0 || 1 < color)
+		if (color < 0 || 3 < color)
 		{
 			std::cerr << "You need to select a predefined color reconstruction mode. (--color)";
 			break;
@@ -266,12 +266,16 @@ int main(int argc, char* argv[])
 
 		switch (color)
 		{
-		case 0:
-			break;
-		case 1: reconstructColor(cameraMatrix, distCoeffs, model, images, masks);
-			break;
-		default:
-			std::cerr << "Ups, something went wrong!" << std::endl;
+			case 0:
+				break;
+			case 1: reconstructColor(cameraMatrix, distCoeffs, model, images, masks);
+				break;
+			case 2: reconstructClosestColor(cameraMatrix, distCoeffs, model, images, masks);
+				break;
+			case 3: reconstructAvgColor(cameraMatrix, distCoeffs, model, images, masks);
+				break;
+			default:
+				std::cerr << "Ups, something went wrong!" << std::endl;
 		}
 
 		//apply postprocessing
