@@ -1,8 +1,36 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#include "Utils.h"
 #include<Eigen/Dense>
 #include <opencv2/core/mat.hpp>
+
+#define for_each_voxel(x, y, z) \
+    if (1) \
+    { \
+        x = 0; \
+        for (; x < model.getX(); x++) \
+        { \
+            y = 0; \
+            for (; y < model.getY(); y++) \
+            { \
+                z = 0; \
+                for (; z < model.getZ(); z++) \
+                { \
+                    goto label(body, __LINE__); \
+                    label(loop_continue, __LINE__): ; \
+                } \
+            } \
+        } \
+    } \
+    else \
+        while(1) \
+            if(1) \
+            { \
+                goto label(loop_continue, __LINE__); \
+            } \
+            else \
+                label(body, __LINE__):
 
 using Eigen::Vector4f;
 
