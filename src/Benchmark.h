@@ -4,18 +4,20 @@
 #include<chrono>
 #include<ctime>
 
+using namespace std::chrono;
+
 #define PERFORMANCE_LOG(performance, start) \
 	if(start) \
-		performance.start = std::chrono::system_clock::now(); \
+		performance.start = system_clock::now(); \
 	else \
-		performance.end = std::chrono::system_clock::now();
+		performance.end = system_clock::now();
 
 #define TIME(performance) \
-	(performance.end - performance.start).count()
+	((duration<float, std::milli>)(performance.end - performance.start)).count()
 
 struct Performance {
-	std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
-	std::chrono::system_clock::time_point end = start;
+	system_clock::time_point start = system_clock::now();
+	system_clock::time_point end = start;
 };
 
 class Benchmark {
@@ -89,10 +91,10 @@ public:
 
 	std::string to_string() {
 		std::ostringstream ss;
-		ss << std::endl << "Benchmark (all times in millisekonds)" << std::endl;
+		ss << std::endl << "Benchmark (all times in milliseconds)" << std::endl;
 		ss << "Name\t\t\t\t" << "|  Model size (x,y,z, voxel size)\t" << "|  Carving time\t" << "|  Coloring time\t" <<
 			"|  Postprocessing time\t" << "|  Marching cubes time\t" << "|  Overall time" << std::endl;
-		for (int i = 0; i < 190; i++) {
+		for (int i = 0; i < 180; i++) {
 			ss << "-";
 		}
 		ss << std::endl;
