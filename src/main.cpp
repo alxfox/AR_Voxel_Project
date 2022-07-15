@@ -364,7 +364,7 @@ int main(int argc, char* argv[])
 		// large, v1, def. coloring
 		Benchmark::GetInstance().NextRun("Large, V1, def. coloring", Vector4f(100, 100, 50, 0.0028f));
 		Benchmark::GetInstance().LogOverall(true);
-		Model model3 = Model(50, 50, 25, 0.0056f);
+		Model model3 = Model(100, 100, 50, 0.0028f);
 		carve(cameraMatrix, distCoeffs, model3, images, masks);
 		reconstructColor(cameraMatrix, distCoeffs, model3, images, masks);
 		model3.handleUnseen();
@@ -375,7 +375,7 @@ int main(int argc, char* argv[])
 		// large, v2, def. coloring
 		Benchmark::GetInstance().NextRun("Large, V2, def. coloring", Vector4f(100, 100, 50, 0.0028f));
 		Benchmark::GetInstance().LogOverall(true);
-		Model model4 = Model(50, 50, 25, 0.0056f);
+		Model model4 = Model(100, 100, 50, 0.0028f);
 		fastCarve(cameraMatrix, distCoeffs, model4, images, masks);
 		reconstructColor(cameraMatrix, distCoeffs, model4, images, masks);
 		model4.handleUnseen();
@@ -386,7 +386,7 @@ int main(int argc, char* argv[])
 		// large, v2, closest color
 		Benchmark::GetInstance().NextRun("Large, V2, closest color", Vector4f(100, 100, 50, 0.0028f));
 		Benchmark::GetInstance().LogOverall(true);
-		Model model5 = Model(50, 50, 25, 0.0056f);
+		Model model5 = Model(100, 100, 50, 0.0028f);
 		fastCarve(cameraMatrix, distCoeffs, model5, images, masks);
 		reconstructClosestColor(cameraMatrix, distCoeffs, model5, images, masks);
 		model5.handleUnseen();
@@ -397,7 +397,7 @@ int main(int argc, char* argv[])
 		// large, v2, avg. color
 		Benchmark::GetInstance().NextRun("Large, V2, avg. color\t", Vector4f(100, 100, 50, 0.0028f));
 		Benchmark::GetInstance().LogOverall(true);
-		Model model6 = Model(50, 50, 25, 0.0056f);
+		Model model6 = Model(100, 100, 50, 0.0028f);
 		fastCarve(cameraMatrix, distCoeffs, model6, images, masks);
 		reconstructAvgColor(cameraMatrix, distCoeffs, model6, images, masks);
 		model6.handleUnseen();
