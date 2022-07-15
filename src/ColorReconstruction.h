@@ -3,12 +3,10 @@
 #ifndef COLOR_RECONSTRUCTION_H
 #define COLOR_RECONSTRUCTION_H
 
-
+#include "Utils.h"
 #include "Model.h"
 #include <opencv2/core/mat.hpp>
 
-#define concat_(a, b) a##b
-#define label(prefix, lnum) concat_(prefix, lnum)
 #define voxel_pass(x, y, z, cameraMatrix, distCoeffs, model, images, masks) \
     cv::Mat intr = cameraMatrix.clone(); \
     intr.convertTo(intr, CV_32F); \
@@ -73,8 +71,26 @@
             else \
                 label(body, __LINE__):
 
-
-void reconstructColor(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, std::vector<cv::Mat>& images, std::vector<cv::Mat>& masks);
+/**
+ * @brief This function performs color reconstruction choosing the closest observer.
+ *
+ * @param cameraMatrix	camera intrinsics
+ * @param distCoeffs	distortion coefficients
+ * @param model			voxel model
+ * @param images		colored images to carve
+ * @param masks			segmentation masks
+ */
 void reconstructClosestColor(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, std::vector<cv::Mat>& images, std::vector<cv::Mat>& masks);
+
+/**
+ * @brief This function performs color reconstruction averaging every observed color.
+ *
+ * @param cameraMatrix	camera intrinsics
+ * @param distCoeffs	distortion coefficients
+ * @param model			voxel model
+ * @param images		colored images to carve
+ * @param masks			segmentation masks
+ */
 void reconstructAvgColor(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, std::vector<cv::Mat>& images, std::vector<cv::Mat>& masks);
+
 #endif

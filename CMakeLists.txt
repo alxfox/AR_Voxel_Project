@@ -26,6 +26,7 @@ set(HEADERS
     src/ColorReconstruction.h
     src/Postprocessing3d.h
     src/Benchmark.h
+    src/Utils.h
 )
 
 set(SOURCES

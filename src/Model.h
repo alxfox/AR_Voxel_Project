@@ -1,8 +1,36 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#include "Utils.h"
 #include<Eigen/Dense>
 #include <opencv2/core/mat.hpp>
+
+#define for_each_voxel(x, y, z) \
+    if (1) \
+    { \
+        x = 0; \
+        for (; x < model.getX(); x++) \
+        { \
+            y = 0; \
+            for (; y < model.getY(); y++) \
+            { \
+                z = 0; \
+                for (; z < model.getZ(); z++) \
+                { \
+                    goto label(body, __LINE__); \
+                    label(loop_continue, __LINE__): ; \
+                } \
+            } \
+        } \
+    } \
+    else \
+        while(1) \
+            if(1) \
+            { \
+                goto label(loop_continue, __LINE__); \
+            } \
+            else \
+                label(body, __LINE__):
 
 using Eigen::Vector4f;
 
@@ -26,8 +54,8 @@ struct Square {
 	{}
 };
 
-#define MODEL_COLOR Vector4f(255, 255, 255, 1) // Vector4f(50, 168, 141, 1)
-#define UNSEEN_COLOR Vector4f(255, 255, 255, 1) // Vector4f(204, 0, 0, 1)
+#define MODEL_COLOR Vector4f(50, 168, 141, 1) // Vector4f(255, 255, 255, 1)
+#define UNSEEN_COLOR Vector4f(204, 0, 0, 1)
 
 class Model
 {
