@@ -54,8 +54,8 @@ struct Square {
 	{}
 };
 
-#define MODEL_COLOR Vector4f(255, 255, 255, 1) // Vector4f(50, 168, 141, 1)
-#define UNSEEN_COLOR Vector4f(255, 255, 255, 1) // Vector4f(204, 0, 0, 1)
+#define MODEL_COLOR Vector4f(50, 168, 141, 1) // Vector4f(255, 255, 255, 1)
+#define UNSEEN_COLOR Vector4f(204, 0, 0, 1)
 
 class Model
 {
