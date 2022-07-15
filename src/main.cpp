@@ -26,7 +26,7 @@ namespace {
 		"{y             | 100   | Give the number of voxels in y direction.}"
 		"{z             | 100   | Give the number of voxels in z direction.}"
 		"{size          | 0.0028| Give the side length of a voxel.}"
-		"{color         | 0     | 0 for no color reconstruction, 1 for nearest camera.}"
+		"{color         | 0     | 0 for no color reconstruction, 1 for nearest camera, 2 for average color.}"
 		"{scale         | 1.0   | Give the scale factor for the output model.}"
 		"{dx            | 0.0   | Move model in x direction (unscaled).}"
 		"{dy            | 0.0   | Move model in y direction (unscaled).}"
@@ -269,11 +269,11 @@ int main(int argc, char* argv[])
 		{
 			case 0:
 				break;
-			case 1: reconstructColor(cameraMatrix, distCoeffs, model, images, masks);
+			//case 1: reconstructColor(cameraMatrix, distCoeffs, model, images, masks);
+			//	break;
+			case 1: reconstructClosestColor(cameraMatrix, distCoeffs, model, images, masks);
 				break;
-			case 2: reconstructClosestColor(cameraMatrix, distCoeffs, model, images, masks);
-				break;
-			case 3: reconstructAvgColor(cameraMatrix, distCoeffs, model, images, masks);
+			case 2: reconstructAvgColor(cameraMatrix, distCoeffs, model, images, masks);
 				break;
 			default:
 				std::cerr << "Ups, something went wrong!" << std::endl;
@@ -338,46 +338,42 @@ int main(int argc, char* argv[])
 
 		std::filesystem::create_directories("./out/bench");
 		// perform benchmarks here
-		// small, v1, def. coloring
-		Benchmark::GetInstance().NextRun("Small, V1, def. coloring", Vector4f(10, 10, 5, 0.028f));
+		// small, v1, no coloring
+		Benchmark::GetInstance().NextRun("Small, V1, no coloring\t", Vector4f(10, 10, 5, 0.028f));
 		Benchmark::GetInstance().LogOverall(true);
 		Model model = Model(10, 10, 5, 0.028f);
 		carve(cameraMatrix, distCoeffs, model, images, masks);
-		reconstructColor(cameraMatrix, distCoeffs, model, images, masks);
 		model.handleUnseen();
 		applyClosure(&model, 3);
 		Vector3f modelTranslation = Vector3f(parser.get<float>("dx"), parser.get<float>("dy"), parser.get<float>("dz"));
 		marchingCubes(&model, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_small_1_def.off");
 		Benchmark::GetInstance().LogOverall(false);
 
-		// medium, v1, def. coloring
-		Benchmark::GetInstance().NextRun("Medium, V1, def. coloring", Vector4f(50, 50, 25, 0.0056f));
+		// medium, v1, no coloring
+		Benchmark::GetInstance().NextRun("Medium, V1, no coloring\t", Vector4f(50, 50, 25, 0.0056f));
 		Benchmark::GetInstance().LogOverall(true);
 		Model model2 = Model(50, 50, 25, 0.0056f);
 		carve(cameraMatrix, distCoeffs, model2, images, masks);
-		reconstructColor(cameraMatrix, distCoeffs, model2, images, masks);
 		model2.handleUnseen();
 		applyClosure(&model2, 3);
 		marchingCubes(&model2, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_medium_1_def.off");
 		Benchmark::GetInstance().LogOverall(false);
 
-		// large, v1, def. coloring
-		Benchmark::GetInstance().NextRun("Large, V1, def. coloring", Vector4f(100, 100, 50, 0.0028f));
+		// large, v1, no coloring
+		Benchmark::GetInstance().NextRun("Large, V1, no coloring\t", Vector4f(100, 100, 50, 0.0028f));
 		Benchmark::GetInstance().LogOverall(true);
 		Model model3 = Model(100, 100, 50, 0.0028f);
 		carve(cameraMatrix, distCoeffs, model3, images, masks);
-		reconstructColor(cameraMatrix, distCoeffs, model3, images, masks);
 		model3.handleUnseen();
 		applyClosure(&model3, 3);
 		marchingCubes(&model3, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_large_1_def.off");
 		Benchmark::GetInstance().LogOverall(false);
 
-		// large, v2, def. coloring
-		Benchmark::GetInstance().NextRun("Large, V2, def. coloring", Vector4f(100, 100, 50, 0.0028f));
+		// large, v2, no coloring
+		Benchmark::GetInstance().NextRun("Large, V2, no coloring\t", Vector4f(100, 100, 50, 0.0028f));
 		Benchmark::GetInstance().LogOverall(true);
 		Model model4 = Model(100, 100, 50, 0.0028f);
 		fastCarve(cameraMatrix, distCoeffs, model4, images, masks);
-		reconstructColor(cameraMatrix, distCoeffs, model4, images, masks);
 		model4.handleUnseen();
 		applyClosure(&model4, 3);
 		marchingCubes(&model4, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_large_2_def.off");

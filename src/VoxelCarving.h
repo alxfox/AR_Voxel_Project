@@ -8,17 +8,6 @@
 #include <opencv2/core/mat.hpp>
 
 /**
- * @brief This function carves a single frame out of the given model.
- *
- * @param cameraMatrix	camera intrinsics
- * @param distCoeffs	distortion coefficients
- * @param model			voxel model
- * @param image			colored image to carve
- * @param mask			segmentation mask
- */
-static void carve(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, cv::Mat& image, cv::Mat& mask);
-
-/**
  * @brief This function carves a multiple frames out of the given model.
  *
  * @param cameraMatrix	camera intrinsics
