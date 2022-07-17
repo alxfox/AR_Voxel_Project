@@ -26,6 +26,28 @@ Install Eigen.
 
 Install https://docs.opencv.org/3.4/d3/d52/tutorial_windows_install.html[OpenCV Library] (Visual Studio 2019 VC16).
 
+=== Clone the repository
+
+.Repository Structure
+
+* Data
+** demo_material
+*** images
+*** masks
+* Libs
+* src
+* CMakeLists.txt
+* README.adoc
+
+.Data
+You can use `Data` to store images, masks, and calibration files of models you want to carve. The subfolder `demo_material` contains all inputs and outputs used to generate the model as described in section <<howto, 4>>.
+
+.Libs
+If you have never worked with `OpenCV` or `Eigen` you can follow the instructions below and install these libraries in the `Libs` directory.
+
+.src
+This directory contains the implementation of this project.
+
 === Windows
 
 ==== CMake
@@ -107,35 +129,166 @@ This script will generate the required installation of `Open CV` in the current 
 Please refere to the following instructions:
 
 * Eigen: https://eigen.tuxfamily.org/dox/GettingStarted.html[All OS]
-* Open CV: https://docs.opencv.org/3.4/d7/d9f/tutorial_linux_install.html[Linux] https://docs.opencv.org/3.4/d0/db2/tutorial_macos_install.html[MacOS] 
+* Open CV: https://docs.opencv.org/3.4/d7/d9f/tutorial_linux_install.html[Linux] https://docs.opencv.org/3.4/d0/db2/tutorial_macos_install.html[MacOS]
 
-.Folder Structure
+=== Build the Project
 
-* voxel_project
-** Build
-** Data
-*** calib_00.jpg
-*** calib_01.jpg...
+After installing both libraries, your repository should look like this.
+
+.Repository Structure
+
+* Data
+** demo_material
+*** images
+*** masks
 * Libs
 ** Eigen3
 ** opencv
 ** install
 *** opencv
 ** opencv_contrib
+* src
+* CMakeLists.txt
+* README.adoc
+
+Now you are ready to generate the project using `CMake`. If you followed the instructions above, `CMake` should already have found the installation directories of `Eigen` and `OpenCV`. Make shure that `Eigen3_DIR` and `OpenCV_DIR` are set correctly.
+
+After compiling the project, you are ready to carve your first model.
 
 
-Command Line Arguments: -w=5 -h=7 -sl=0.04 -ml=0.02 -d=10 -v="../Data/calib_%02d.jpg" myoutfile
+
 
 == Example
 `TODO`
 
 == How to run?
+
+[#howto]
 `TODO`
 
+=== Generate ChArUco Board
+
+.Run
+
+[source,shell]
+----
+$ ./voxel_project.exe -c=1
+----
+
+This command will generate a new subdirectory `out` containing the file `BoardImage.jpg`. This ChArUco Board can be used to calibrate your individual camera and later on carve your own models.
+
 === Camera Calibration
+
+.Run
+
+[source,shell]
+----
+$ ./voxel_project.exe -c=2
+----
+
+`TODO`
+
+=== Segmentation
+
+.Run
+
+[source,shell]
+----
+$ ./voxel_project.exe -c=3
+----
+
 `TODO`
 
 === Carve your own model
+
+.Run
+
+[source,shell]
+----
+$ ./voxel_project.exe -c=5 -images="<images-dir>" -masks="<masks-dir>" -calibration="<cameracalibartion.yml-dir>" -carve=<carving-method> -x=<x-dim> -y=<y-dim> -z=<z-dim> -size=<voxel-size> -scale=<model-scale> -dx=<x-offset> -dy=<y-offset> -dz=<z-offset> -color=<color-method> -postprocessing=<postprocessing-method>
+----
+
+.Flags
+
+|====
+| Flag | Default | Description
+
+| -images="<images-dir>"
+| NonOptional
+| Directory of the input images e.g. `./Data/demo_material/images`.
+
+| -masks="<masks-dir>" 
+| NonOptional
+| Directory of the masks e.g. `./Data/demo_material/masks`.
+
+| -calibration="<cameracalibartion.yml-dir>"
+| NonOptional
+| Directory of the masks e.g. `./Data/demo_material/cameracalibration.yml`.
+
+| -carve=<carving-method>
+| 1
+a|
+* `1` - standard carving
+* `2` - greedy carving (fast)
+
+| -x=<x-dim>
+| 100
+| Number of voxels in x direction.
+
+| -y=<y-dim>
+| 100
+| Number of voxels in y direction.
+
+| -z=<z-dim>
+| 100
+| Number of voxels in z direction.
+
+| -size=<voxel-size>
+| 0.0028
+| Side length of a voxel.
+
+| -scale=<model-scale>
+| 1.0
+| Scale factor for the output model.
+
+| -dx=<x-offset>
+| 0.0
+| Move output model in x direction (unscaled).
+
+| -dx=<y-offset>
+| 0.0
+| Move output model in y direction (unscaled).
+
+| -dx=<z-offset>
+| 0.0
+| Move output model in z direction (unscaled).
+
+| -color=<color-method> 
+| 0
+a|
+* `0` - no color reconstruction
+* `1` - nearest ovserver
+* `2` - average color
+
+| -postprocessing=<postprocessing-method>
+| true
+a|
+* `true` - apply postprocessing on the model
+* `false` - do not apply postprocessing
+
+|====
+
+`TODO`
+
+=== Benchmarking
+
+.Run
+
+[source,shell]
+----
+$ ./voxel_project.exe -c=6
+----
+
 `TODO`
 
 == References
