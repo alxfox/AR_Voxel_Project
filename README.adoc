@@ -212,6 +212,7 @@ This command will generate a new file `out/mesh.off` containing the mesh generat
 
 .Flags
 
+[cols="~,~,~"]
 |====
 | Flag | Default | Description
 
