@@ -32,4 +32,5 @@
 *.app
 
 Build/
-Data/
+Data/*
+!Data/demo_material/
