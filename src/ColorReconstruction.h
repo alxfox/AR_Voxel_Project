@@ -29,6 +29,52 @@
     cv::Rect image_borders = cv::Rect(0, 0, images[0].cols, images[0].rows); \
     voxel_pass_loops(x, y, z, cameraMatrix, distCoeffs, model, images, masks)
 
+#if (GCC_COMPILER_DETECTED || CLANG_COMPILER_DETECTED)
+
+#define voxel_pass_loops(x, y, z, cameraMatrix, distCoeffs, model, images, masks) \
+    if (1) \
+    { \
+        x = 0; \
+        for (; x < model.getX(); x++) \
+        { \
+            y = 0; \
+            for (; y < model.getY(); y++) \
+            { \
+                z = 0; \
+                for (; z < model.getZ(); z++) \
+                { \
+                    if (model.get(x, y, z)(3) == 0 || model.isInner(x, y, z)) \
+                    { \
+                        continue; \
+                    } \
+                    cv::Vec4f word_coord = model.toWord(x, y, z); \
+                    for (int i = 0; i < undist_imgs.size(); i++) { \
+                        cv::Vec3f camera_coord = worldToCamera(word_coord, poses[i], intr); \
+                        cv::Point pixel_pos = cv::Point((int)std::round(camera_coord[0]), (int)std::round(camera_coord[1])); \
+                        if (!pixel_pos.inside(image_borders)) \
+                        { \
+                            continue; \
+                        } \
+                        cv::Vec3b pixel = undist_imgs[i].at<cv::Vec3b>(pixel_pos); \
+                        model.addColor(x, y, z, Eigen::Vector4f(pixel(2), pixel(1), pixel(0), 1), cv::norm(cameras[i] - word_coord)); \
+                    } \
+                    goto body; \
+                    loop_continue: ; \
+                } \
+            } \
+        } \
+    } \
+    else \
+        while(1) \
+            if(1) \
+            { \
+                goto loop_continue; \
+            } \
+            else \
+                body:
+
+#else
+
 #define voxel_pass_loops(x, y, z, cameraMatrix, distCoeffs, model, images, masks) \
     if (1) \
     { \
@@ -70,6 +116,8 @@
             } \
             else \
                 label(body, __LINE__):
+
+#endif
 
 /**
  * @brief This function performs color reconstruction choosing the closest observer.
