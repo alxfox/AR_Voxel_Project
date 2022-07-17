@@ -1,5 +1,5 @@
 :title: Voxel Carving of 3D Surfaces using AR Markers for Pose Estimation
-:description: Testcases for GAD exercises
+:description: Voxel Carving Project for 3D Scanning Course
 :keywords: cpp, tum, voxel, voxel carving
 :authors: Maximilian Anzinger <maximilian.anzinger@tum.de>; Alexander Fuchs <fuchsale@in.tum.de>; Georg Henning <georgm.henning@tum.de>; Nils Keunecke <nils.keunecke@tum.de>;
 :revremark:
@@ -22,7 +22,7 @@ Final project for "3D Scanning and Motion Capture" class in SS2022 at Technical 
 
 == Setup
 
-Install Eigen.
+Install https://eigen.tuxfamily.org/index.php?title=Main_Page [Eigen] (Version 3.4).
 
 Install https://docs.opencv.org/3.4/d3/d52/tutorial_windows_install.html[OpenCV Library] (Visual Studio 2019 VC16).
 
@@ -269,7 +269,7 @@ a|
 | 0
 a|
 * `0` - no color reconstruction
-* `1` - nearest ovserver
+* `1` - nearest observer
 * `2` - average color
 
 | -postprocessing=<postprocessing-method>
@@ -288,8 +288,43 @@ a|
 
 [source,shell]
 ----
-$ ./voxel_project.exe -c=6
+$ ./voxel_project.exe -c=6 -images="<images-dir>" -masks="<masks-dir>" -calibration="<cameracalibartion.yml-dir>"
 ----
+
+This command will execute the provided benchmarking cases on the specified data. For each case a mesh file will be generated in `out/bench`. Additionally, the bash will print a table containing information about the test cases and exectuion times (see table below).
+For more information about the flags please refer to the table above. 
+
+.Benchmark output
+
+|====
+| Column | Description |
+
+| Name
+| Short description of the testcase
+a|
+* Model size (Small, Medium, Large)
+* Carving method (`1` - standard, `2`- greedy)
+* Coloring mehtod
+
+| Model size
+| Model dimensions (x, y, z direction) and voxel size
+
+| Carving time
+| Time needed to execute carving process (in milliseconds)
+
+| Coloring time
+| Time needed to execute coloring process (in milliseconds)
+
+| Postprocessing time
+| Time needed for postprocessing (in milliseconds)
+
+| Marching cubes time
+| Time needed to transform model into `.off`-format sutiable representation using the marching cubes algorithm (in milliseconds)
+
+| Overall time
+| Time needed for complete reconstruction process (including output file writing and variable initializations, excluding image loading) (in milliseconds)
+
+|====
 
 `TODO`
 
