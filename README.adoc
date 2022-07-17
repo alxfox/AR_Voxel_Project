@@ -298,7 +298,7 @@ For more information about the flags please refer to the table above.
 .Benchmark output
 
 |====
-| Column | Description |
+| Column | Description
 
 | Name
 | Short description of the testcase
