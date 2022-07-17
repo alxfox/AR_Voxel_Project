@@ -338,67 +338,93 @@ int main(int argc, char* argv[])
 
 		std::filesystem::create_directories("./out/bench");
 		// perform benchmarks here
-		// small, v1, no coloring
-		Benchmark::GetInstance().NextRun("Small, V1, no coloring\t", Vector4f(10, 10, 5, 0.028f));
+		// small, v1, avg coloring
+		Benchmark::GetInstance().NextRun("Small, V1, avg. coloring\t", Vector4f(10, 10, 5, 0.028f));
 		Benchmark::GetInstance().LogOverall(true);
 		Model model = Model(10, 10, 5, 0.028f);
 		carve(cameraMatrix, distCoeffs, model, images, masks);
+		reconstructAvgColor(cameraMatrix, distCoeffs, model, images, masks);
 		model.handleUnseen();
 		applyClosure(&model, 3);
 		Vector3f modelTranslation = Vector3f(parser.get<float>("dx"), parser.get<float>("dy"), parser.get<float>("dz"));
-		marchingCubes(&model, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_small_1_def.off");
+		marchingCubes(&model, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_small_1_avg.off");
 		Benchmark::GetInstance().LogOverall(false);
 
-		// medium, v1, no coloring
-		Benchmark::GetInstance().NextRun("Medium, V1, no coloring\t", Vector4f(50, 50, 25, 0.0056f));
+		// medium, v1, avg coloring
+		Benchmark::GetInstance().NextRun("Medium, V1, avg. coloring\t", Vector4f(50, 50, 25, 0.0056f));
 		Benchmark::GetInstance().LogOverall(true);
 		Model model2 = Model(50, 50, 25, 0.0056f);
 		carve(cameraMatrix, distCoeffs, model2, images, masks);
+		reconstructAvgColor(cameraMatrix, distCoeffs, model2, images, masks);
 		model2.handleUnseen();
 		applyClosure(&model2, 3);
-		marchingCubes(&model2, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_medium_1_def.off");
+		marchingCubes(&model2, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_medium_1_avg.off");
 		Benchmark::GetInstance().LogOverall(false);
 
-		// large, v1, no coloring
-		Benchmark::GetInstance().NextRun("Large, V1, no coloring\t", Vector4f(100, 100, 50, 0.0028f));
+		// medium, v1, closest coloring
+		Benchmark::GetInstance().NextRun("Medium, V1, closest coloring\t", Vector4f(50, 50, 25, 0.0056f));
+		Benchmark::GetInstance().LogOverall(true);
+		Model model2b = Model(50, 50, 25, 0.0056f);
+		carve(cameraMatrix, distCoeffs, model2b, images, masks);
+		reconstructAvgColor(cameraMatrix, distCoeffs, model2b, images, masks);
+		model2b.handleUnseen();
+		applyClosure(&model2b, 3);
+		marchingCubes(&model2b, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_medium_1_closest.off");
+		Benchmark::GetInstance().LogOverall(false);
+
+		// large, v1, avg coloring
+		Benchmark::GetInstance().NextRun("Large, V1, avg. coloring\t", Vector4f(100, 100, 50, 0.0028f));
 		Benchmark::GetInstance().LogOverall(true);
 		Model model3 = Model(100, 100, 50, 0.0028f);
 		carve(cameraMatrix, distCoeffs, model3, images, masks);
+		reconstructAvgColor(cameraMatrix, distCoeffs, model3, images, masks);
 		model3.handleUnseen();
 		applyClosure(&model3, 3);
-		marchingCubes(&model3, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_large_1_def.off");
+		marchingCubes(&model3, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_large_1_avg.off");
 		Benchmark::GetInstance().LogOverall(false);
 
-		// large, v2, no coloring
-		Benchmark::GetInstance().NextRun("Large, V2, no coloring\t", Vector4f(100, 100, 50, 0.0028f));
+		// small, v2, avg coloring
+		Benchmark::GetInstance().NextRun("Small, V2, avg. coloring\t", Vector4f(10, 10, 5, 0.028f));
 		Benchmark::GetInstance().LogOverall(true);
-		Model model4 = Model(100, 100, 50, 0.0028f);
+		Model model4 = Model(10, 10, 5, 0.028f);
 		fastCarve(cameraMatrix, distCoeffs, model4, images, masks);
+		reconstructAvgColor(cameraMatrix, distCoeffs, model4, images, masks);
 		model4.handleUnseen();
 		applyClosure(&model4, 3);
-		marchingCubes(&model4, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_large_2_def.off");
+		marchingCubes(&model4, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_small_2_avg.off");
 		Benchmark::GetInstance().LogOverall(false);
 
-		// large, v2, closest color
-		Benchmark::GetInstance().NextRun("Large, V2, closest color", Vector4f(100, 100, 50, 0.0028f));
+		// medium, v2, avg coloring
+		Benchmark::GetInstance().NextRun("Medium, V2, avg. coloring\t", Vector4f(50, 50, 25, 0.0056f));
 		Benchmark::GetInstance().LogOverall(true);
-		Model model5 = Model(100, 100, 50, 0.0028f);
+		Model model5 = Model(50, 50, 25, 0.0056f);
 		fastCarve(cameraMatrix, distCoeffs, model5, images, masks);
-		reconstructClosestColor(cameraMatrix, distCoeffs, model5, images, masks);
+		reconstructAvgColor(cameraMatrix, distCoeffs, model5, images, masks);
 		model5.handleUnseen();
 		applyClosure(&model5, 3);
-		marchingCubes(&model5, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_large_2_closest.off");
+		marchingCubes(&model5, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_medium_2_avg.off");
 		Benchmark::GetInstance().LogOverall(false);
 
-		// large, v2, avg. color
-		Benchmark::GetInstance().NextRun("Large, V2, avg. color\t", Vector4f(100, 100, 50, 0.0028f));
+		// medium, v2, closest coloring
+		Benchmark::GetInstance().NextRun("Medium, V2, closest coloring\t", Vector4f(50, 50, 25, 0.0056f));
 		Benchmark::GetInstance().LogOverall(true);
-		Model model6 = Model(100, 100, 50, 0.0028f);
-		fastCarve(cameraMatrix, distCoeffs, model6, images, masks);
-		reconstructAvgColor(cameraMatrix, distCoeffs, model6, images, masks);
-		model6.handleUnseen();
-		applyClosure(&model6, 3);
-		marchingCubes(&model6, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_large_2_avg.off");
+		Model model6b = Model(50, 50, 25, 0.0056f);
+		fastCarve(cameraMatrix, distCoeffs, model6b, images, masks);
+		reconstructAvgColor(cameraMatrix, distCoeffs, model6b, images, masks);
+		model6b.handleUnseen();
+		applyClosure(&model6b, 3);
+		marchingCubes(&model6b, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_medium_2_closest.off");
+		Benchmark::GetInstance().LogOverall(false);
+
+		// large, v2, avg coloring
+		Benchmark::GetInstance().NextRun("Large, V2, avg. coloring\t", Vector4f(100, 100, 50, 0.0028f));
+		Benchmark::GetInstance().LogOverall(true);
+		Model model7 = Model(100, 100, 50, 0.0028f);
+		fastCarve(cameraMatrix, distCoeffs, model7, images, masks);
+		reconstructAvgColor(cameraMatrix, distCoeffs, model7, images, masks);
+		model7.handleUnseen();
+		applyClosure(&model7, 3);
+		marchingCubes(&model7, parser.get<float>("scale"), modelTranslation, 0.5f, "out/bench/mesh_large_2_avg.off");
 		Benchmark::GetInstance().LogOverall(false);
 
 		std::cout << Benchmark::GetInstance().to_string() << std::endl;

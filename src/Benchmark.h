@@ -99,7 +99,7 @@ public:
 		}
 		ss << std::endl;
 		for (int i = 1; i < runNames.size(); i++) {
-			ss << runNames.at(i) << "\t|  " <<
+			ss << runNames.at(i) << "|  " <<
 				modelSizes.at(i).x() << "x" << modelSizes.at(i).y() << "x" << modelSizes.at(i).z() << ", " << modelSizes.at(i)(3) << "\t\t\t|  " <<
 				TIME(carving.at(i)) << "\t|  " << TIME(coloring.at(i)) << "\t\t|  " << TIME(postProcessing.at(i)) << "\t\t|  " <<
 				TIME(marchingCubes.at(i)) << "\t\t|  " << TIME(overall.at(i)) << std::endl;
