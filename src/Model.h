@@ -5,6 +5,37 @@
 #include<Eigen/Dense>
 #include <opencv2/core/mat.hpp>
 
+#if (GCC_COMPILER_DETECTED || CLANG_COMPILER_DETECTED)
+
+#define for_each_voxel(x, y, z) \
+    if (1) \
+    { \
+        x = 0; \
+        for (; x < model.getX(); x++) \
+        { \
+            y = 0; \
+            for (; y < model.getY(); y++) \
+            { \
+                z = 0; \
+                for (; z < model.getZ(); z++) \
+                { \
+                    goto body; \
+                    loop_continue: ; \
+                } \
+            } \
+        } \
+    } \
+    else \
+        while(1) \
+            if(1) \
+            { \
+                goto loop_continue; \
+            } \
+            else \
+                body:
+
+#else
+
 #define for_each_voxel(x, y, z) \
     if (1) \
     { \
@@ -31,6 +62,8 @@
             } \
             else \
                 label(body, __LINE__):
+
+#endif
 
 using Eigen::Vector4f;
 
