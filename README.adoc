@@ -301,8 +301,8 @@ For more information about the flags please refer to the table above.
 | Column | Description
 
 | Name
-| Short description of the testcase
-a|
+a| Short description of the testcase
+
 * Model size (Small, Medium, Large)
 * Carving method (`1` - standard, `2`- greedy)
 * Coloring mehtod
