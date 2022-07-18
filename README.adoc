@@ -328,7 +328,7 @@ a| Short description of the testcase
 
 |====
 
-== References
+
 `TODO`
 
 textexample <<aa>> text example <<bb>> te xt exam ple.
