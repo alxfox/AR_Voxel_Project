@@ -155,16 +155,12 @@ Now you are ready to generate the project using `CMake`. If you followed the ins
 
 After compiling the project, you are ready to carve your first model.
 
-
-
-
 == Example
 `TODO`
 
 == How to run?
 
 [#howto]
-`TODO`
 
 === Generate ChArUco Board
 
@@ -281,8 +277,6 @@ a|
 
 |====
 
-`TODO`
-
 === Benchmarking
 
 .Run
@@ -327,7 +321,13 @@ a| Short description of the testcase
 
 |====
 
-`TODO`
-
 == References
 `TODO`
+
+textexample <<aa>> text example <<bb>> te xt exam ple.
+
+[bibliography]
+== References
+
+* [[[aa,1]]] Resource 1
+* [[[bb,2]]] Resource 2
