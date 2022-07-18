@@ -155,16 +155,19 @@ Now you are ready to generate the project using `CMake`. If you followed the ins
 
 After compiling the project, you are ready to carve your first model.
 
-
-
-
 == Example
-`TODO`
+
+The following example gives visualize the carved model of our demo object. If you want to reproduce our results, you can use https://github.com/alxfox/AR_Voxel_Project/tree/master/Data/demo_material[this] dataset. For comparison we also provide details about the configuration and the expected output meshes.
+
+.Example Input Image (total of 8)
+image::Data/demo_material/images/image0000.jpg[]
+
+.Generated Model: post processing and color reconstruction (Method 2 - color averaging) applied.
+image::Data/demo_material/generated_models/3_solid.png[]
 
 == How to run?
 
 [#howto]
-`TODO`
 
 === Generate ChArUco Board
 
@@ -281,8 +284,6 @@ a|
 
 |====
 
-`TODO`
-
 === Benchmarking
 
 .Run
@@ -327,7 +328,13 @@ a| Short description of the testcase
 
 |====
 
-`TODO`
-
 == References
 `TODO`
+
+textexample <<aa>> text example <<bb>> te xt exam ple.
+
+[bibliography]
+== References
+
+* [[[aa,1]]] Resource 1
+* [[[bb,2]]] Resource 2
