@@ -160,10 +160,10 @@ After compiling the project, you are ready to carve your first model.
 The following example gives visualize the carved model of our demo object. If you want to reproduce our results, you can use https://github.com/alxfox/AR_Voxel_Project/tree/master/Data/demo_material[this] dataset. For comparison we also provide details about the configuration and the expected output meshes.
 
 .Example Input Image (total of 8)
-image::Data/demo_material/images/image0000.jpg[]
+image::Data/demo_material/images/image0000.jpg[600, 400, align="center"]
 
 .Generated Model: post processing and color reconstruction (Method 2 - color averaging) applied.
-image::Data/demo_material/generated_models/3_solid.png[]
+image::Data/demo_material/generated_models/3_solid.png[600, 400, align="center"]
 
 == How to run?
 
