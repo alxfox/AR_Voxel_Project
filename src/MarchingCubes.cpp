@@ -30,7 +30,11 @@ bool marchingCubes(Model* model, float scale, Vector3f translation, float thresh
 	return true;
 }
 
-// Testing
+/**
+* @brief Function for testing marching cubes
+* 
+* @return bool	whether the mesh was written successfully
+*/
 bool testMarchingCubes() {
 	std::cout << "Testing marching cubes" << std::endl;
 	Model model(4, 4, 4, 1);
