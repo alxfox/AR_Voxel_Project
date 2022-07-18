@@ -12,8 +12,8 @@
 using Eigen::Vector3f;
 
 /* Disclaimer:
-* This implementation of Marching cubes was highly inspired by Exercise 2 from TUM's lecture
-* "3D Scanning & Motion Capture (summer term 2022)"!
+* This implementation of marching cubes was highly inspired by exercise 2 from TUM's lecture
+* "3D Scanning & Motion Capture" (summer term 2022)!
 */
 
 struct Triangle {
@@ -403,13 +403,32 @@ static int triTable[256][16] = {
 	{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }
 };
 
+/**
+* @brief Calculates the mean of the params and rounds it to an unsigned int
+*
+* @param c1				value 1
+* @param c2				value 2
+* @param c3				value 3
+* @return unsigned int	rounded mean of params
+*/
 static unsigned int MeanColorFloats(float c1, float c2, float c3) {
-	return std::round((c1 + c2 + c3) / 3);
+	return (unsigned int)std::round((c1 + c2 + c3) / 3);
 }
 
+/**
+* @brief Interpolates the given points and colors based on a threshold
+*
+* @param threshold			interpolation threshold
+* @param point0				coordinates of first point
+* @param val0				color of first point
+* @param point1				coordinates of second point
+* @param val1				color of second point
+* @return MC_Interpolate	interpolated coordinates and color
+*/
 static MC_Interpolate VertexInterp(float threshold, const Vector3f& point0, const Vector4f& val0, const Vector3f& point1, const Vector4f& val1) {
 	MC_Interpolate ret;
 
+	// ignore points that don't belong to the model (w == 0.0f)
 	if (val0.w() == 0.0f && val1.w() != 0.0f) {
 		ret.color = Vector3f(val1.x(), val1.y(), val1.z());
 		ret.coord = point1;
@@ -421,10 +440,17 @@ static MC_Interpolate VertexInterp(float threshold, const Vector3f& point0, cons
 		return ret;
 	}
 
-	float interpolateFactor = (threshold - val0.w()) / (val1.w() - val0.w());
+	float interpolateFactor;
+	if (val0.w() == val1.w()) {
+		interpolateFactor = 0.5f;
+	}
+	else {
+		interpolateFactor = (threshold - val0.w()) / (val1.w() - val0.w());
+	}
 	ret.coord = (1 - interpolateFactor) * point0 + interpolateFactor * point1;
 	Vector3f col0 = Vector3f(val0.x(), val0.y(), val0.z());
 	Vector3f col1 = Vector3f(val1.x(), val1.y(), val1.z());
+
 	// don't interpolate default colors
 	if (col0 == MODEL_COLOR.head(3) || col0 == UNSEEN_COLOR.head(3))
 	{
@@ -441,6 +467,14 @@ static MC_Interpolate VertexInterp(float threshold, const Vector3f& point0, cons
 	return ret;
 }
 
+/**
+* @brief Converts a voxel into a triangle mesh based on a threshold
+* 
+* @param cell		cell representation of the voxel
+* @param threshold	the threshold
+* @param triangles	triangle mesh container to be written to
+* @return int		number of generated triangles
+*/
 static int Polygonise(const MC_Gridcell& cell, float threshold, MC_Triangle* triangles) {
 	int cubeIdx = 0;
 	for (int i = 0; i < 8; i++) {
@@ -476,6 +510,25 @@ static int Polygonise(const MC_Gridcell& cell, float threshold, MC_Triangle* tri
 	return nTriang;
 }
 
+// disable information loss warning for visual studio compiler
+#if !(GCC_COMPILER_DETECTED || CLANG_COMPILER_DETECTED)
+
+#pragma warning( push )
+#pragma warning( disable : 4244 )
+
+#endif
+
+/**
+* @brief This function processes a single voxel of the model to convert it into a mesh
+* 
+* @param model		the model
+* @param x			x-coordinate of voxel base point in the model
+* @param y			y-coordinate of voxel base point in the model
+* @param z			z-coordinate of voxel base point in the model
+* @param mesh		resulting mesh to be written to
+* @param threshold	threshold for voxel processing
+* @return bool		whether one or more triangles have been created or not
+*/
 static bool ProcessVoxel(Model* model, int x, int y, int z, SimpleMesh* mesh, float threshold) {
 
 	MC_Gridcell cell;
@@ -524,7 +577,22 @@ static bool ProcessVoxel(Model* model, int x, int y, int z, SimpleMesh* mesh, fl
 	return true;
 }
 
+#if !(GCC_COMPILER_DETECTED || CLANG_COMPILER_DETECTED)
+
+#pragma warning( pop )
+
+#endif
+
+/**
+* @brief This function performs marching cubes on the given model and writes the resulting mesh to a file.
+* 
+* @param model			the model to be processed
+* @param scale			scaling factor to be applied on the result mesh
+* @param translation	translation vector to be applied on the resulting mesh
+* @param threshold		threshold determining down to what w()-value a point will be considered part of the model
+* @param outFileName	name of the output file the mesh will be written to
+* @return bool			whether the mesh was written successfully 
+*/
 bool marchingCubes(Model* model, float scale = 1.0f, Vector3f translation = Vector3f(0, 0, 0), float threshold = 0.5f, std::string outFileName = "out/mesh.off");
-bool testMarchingCubes();
 
 #endif
