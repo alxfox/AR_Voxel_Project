@@ -34,6 +34,7 @@ namespace {
 		"{model_debug   | false | Whether to generate a raw cube-mesh of the model.}"
 		"{postprocessing | true  | Whether to apply posprocessing on the model.}"
 		"{intermediateMesh | false  | Whether to generate a mesh after each image (only carving method 1).}"
+		"{outFile | ./out/mesh.off  | The filepath (including .off file) the generated mesh should be written to.}"
 		;
 }
 
@@ -294,7 +295,7 @@ int main(int argc, char* argv[])
 
 		//generate triangle mesh
 		Vector3f modelTranslation = Vector3f(parser.get<float>("dx"), parser.get<float>("dy"), parser.get<float>("dz"));
-		marchingCubes(&model, parser.get<float>("scale"), modelTranslation);
+		marchingCubes(&model, parser.get<float>("scale"), modelTranslation, 0.5f, parser.get<std::string>("outFile"));
 	}
 	break;
 	case 6:
