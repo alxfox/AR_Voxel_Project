@@ -4,6 +4,7 @@
 #include "PoseEstimation.h"
 #include "VoxelCarving.h"
 #include "Segmentation.h"
+#include "MarchingCubes.h"
 #include "Benchmark.h"
 
 /**
@@ -56,11 +57,16 @@ static void carve(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, cv::
     std::cout << "LOG - VC: completed carving of a single image." << std::endl;
 }
 
-void carve(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, std::vector<cv::Mat>& images, std::vector<cv::Mat>& masks) {
+void carve(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, std::vector<cv::Mat>& images, std::vector<cv::Mat>& masks, bool intermediateMeshes) {
     std::cout << "LOG - VC: starting carving process (version 1)." << std::endl;
     Benchmark::GetInstance().LogCarving(true);
-    for (int i = 0; i < images.size(); i++) // carve each frame seperately
+    for (int i = 0; i < images.size(); i++) { // carve each frame seperately
         carve(cameraMatrix, distCoeffs, model, images[i], masks[i]);
+        if (intermediateMeshes) {
+            std::cout << "LOG - VC: generating intermediate mesh for image " << i << std::endl;
+            marchingCubes(&model, 1.0f, Vector3f(i*(model.getX() + 2)*model.getSize(), 0, 0), 0.5f, (std::string) ("out/intermediate/image_" +  std::to_string(i) + "_mesh.off"));
+        }
+    }
     Benchmark::GetInstance().LogCarving(false);
     std::cout << "LOG - VC: carving complete." << std::endl;
 }

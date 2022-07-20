@@ -33,6 +33,7 @@ namespace {
 		"{dz            | 0.0   | Move model in z direction (unscaled).}"
 		"{model_debug   | false | Whether to generate a raw cube-mesh of the model.}"
 		"{postprocessing | true  | Whether to apply posprocessing on the model.}"
+		"{intermediateMesh | false  | Whether to generate a mesh after each image (only carving method 1).}"
 		;
 }
 
@@ -40,6 +41,7 @@ int main(int argc, char* argv[])
 {
 	std::filesystem::create_directories("./out");
 	std::filesystem::create_directories("./out/tmp");
+	std::filesystem::create_directories("./out/intermediate");
 	cv::CommandLineParser parser(argc, argv, keys);
 	parser.about(about);
 	if (argc < 2) {
@@ -249,7 +251,7 @@ int main(int argc, char* argv[])
 		// carve
 		switch (carveArg)
 		{
-		case 1: carve(cameraMatrix, distCoeffs, model, images, masks);
+		case 1: carve(cameraMatrix, distCoeffs, model, images, masks, parser.get<bool>("intermediateMesh"));
 			break;
 		case 2: fastCarve(cameraMatrix, distCoeffs, model, images, masks);
 			break;

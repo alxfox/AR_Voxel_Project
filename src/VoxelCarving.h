@@ -16,7 +16,7 @@
  * @param images		colored images to carve
  * @param masks			segmentation masks
  */
-void carve(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, std::vector<cv::Mat>& images, std::vector<cv::Mat>& masks);
+void carve(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, std::vector<cv::Mat>& images, std::vector<cv::Mat>& masks, bool intermediateMeshes = false);
 
 /**
  * @brief This function carves a multiple frames out of the given model. Using a more error prone but significantly faster greedy approach compared to the standard method.
