@@ -188,9 +188,34 @@ This command will generate a new subdirectory `out` containing the file `BoardIm
 ----
 $ ./voxel_project.exe -c=2
 ----
+Perform camera calibration on previously taken images or take images using a connected camera and perform calibration on those.
 
-`TODO`
+After initial calibration, the user can interactively choose to exclude specific images by ID (e.g. outliers). For this, reprojection errors are provided for individual images, as well as the overall error.
 
+The final data is saved to a .yml file that can be specified using -calibration
+
+[cols="~,~,~"]
+|====
+| Flag | Default | Description
+
+| -live=true/false
+| true
+| Whether the images used for calibration should be taken live using a connected camera. If false, a folder with images for calibration has to be provided to -images.
+
+| -cam_id=<cam_id>
+| 0
+| The camera to use when performing live calibration. 0 should be the system's default device.
+
+| -images="<images-dir>"
+| Ignored if live==true
+  
+  NonOptional if live==false
+| Directory of the input images to be used for calibration e.g. `./Data/demo_material/images`.
+
+| -calibration="<calibration-file>"
+| out/cameracalibration.yml
+| Output file for the camera calibration data.
+|====
 === Segmentation
 
 .Run
