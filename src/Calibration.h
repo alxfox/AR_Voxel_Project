@@ -58,7 +58,7 @@ using namespace cv;
 **/
 class Calibration {
 private:
-	string outputFile = "out/cameracalibration.yml";
+	string outputFile = "out/cameraration.yml";
 	Ptr<aruco::Dictionary> dictionary;
 	Ptr<aruco::CharucoBoard> charucoboard;
 	Ptr<aruco::Board> board;
@@ -87,15 +87,16 @@ public:
 		hasBoard = true;
 		return 0;
 	}
+	Calibration(std::string outFile) {
+		outputFile = outFile;
+	}
 	Calibration() {
-
 	}
 	int calibrate(vector<int>& excludedImages, bool captureLive, bool firstCalibration, String imageLocation = "./out/tmp/calib_%03d.jpg", int camId = 0) {//"../Data/calib_%02d.jpg"
 		if (!hasBoard) {
 			cerr << "no charuco board has been defined to be used for calibration";
 			return 0;
 		}
-		std::cout << imageLocation << std::endl;
 		bool skipUserPrompt = false;
 		int calibrationFlags = 0;
 		float aspectRatio = 1;

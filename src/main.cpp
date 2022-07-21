@@ -16,9 +16,10 @@ namespace {
 	const char* keys =
 		"{c        		|       | 1 for AruCo board creation, 2 for camera calibration, 3 for pose estimation, 5 for carving, 6 for predefined benchmarking}"
 		"{resize        | 1.0   | Resize the image preview during calibration by this factor (for very high/low res cameras)}"
-		"{live          | true  | Whether to use live camera calibration, otherwise images will be taken from ../Data/calib_%02d.jpg}"
+		"{live          | true  | Whether to use live camera calibration, otherwise images will be taken from the folder provided to -images}"
+		"{cam_id        | 0     | ID of the connected camera to be used when performing live calibration}"
 		"{images        |       | Give the path to the directory containing the images for pose estimation/carving}"
-		"{calibration   |       | Give the path to the result of the camera calibration (eg. kinect_v1.yml)}"
+		"{calibration   | out/cameracalibration.yml | Give the path to the result of the camera calibration (eg. kinect_v1.yml)}"
 		"{video_id      | -1    | Give the id to the video stream for which you want to estimate the pose}"
 		"{carve         | 1     | 1 for standard carving, 2 for fast carving}"
 		"{masks         |       | Give the path to the directory containing the image masks}"
@@ -65,7 +66,11 @@ int main(int argc, char* argv[])
 		// in post: using pictures from a specified folder
 		bool liveCalibration = parser.get<bool>("live");
 
-		Calibration cal{};
+		std::string outFile = "out/cameracalibration.yml";
+		if (parser.has("calibration"))
+			outFile = parser.get<std::string>("calibration");
+
+		Calibration cal{outFile};
 		std::string image_dir = "./out/tmp";
 		cal.createBoard();
 		cal.resizeFactor = parser.get<float>("resize"); // resize factor for shown images during the calibration process
@@ -79,8 +84,9 @@ int main(int argc, char* argv[])
 		vector<int> excludedImages;	// images that have been excluded from calibration by the user
 		bool calibrating = true;
 		bool firstCalibration = true;
+		int camId = parser.get<int>("cam_id");
 		do {
-			cal.calibrate(excludedImages, liveCalibration, firstCalibration, image_dir);
+			cal.calibrate(excludedImages, liveCalibration, firstCalibration, image_dir, camId);
 			firstCalibration = false;
 			liveCalibration = false; //images can only be taken live during the first iteration of calibration
 			string input;
