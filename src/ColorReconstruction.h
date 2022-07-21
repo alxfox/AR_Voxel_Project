@@ -47,8 +47,8 @@
                     { \
                         continue; \
                     } \
-                    cv::Vec4f word_coord = model.toWord(x, y, z); \
                     for (int i = 0; i < undist_imgs.size(); i++) { \
+                        cv::Vec4f word_coord = model.toWord(x, y, z); \
                         cv::Vec3f camera_coord = worldToCamera(word_coord, poses[i], intr); \
                         cv::Point pixel_pos = cv::Point((int)std::round(camera_coord[0]), (int)std::round(camera_coord[1])); \
                         if (!pixel_pos.inside(image_borders)) \
