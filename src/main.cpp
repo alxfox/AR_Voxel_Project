@@ -15,10 +15,10 @@ namespace {
 		"AR Voxel Carving Project\n";
 	const char* keys =
 		"{c        		|       | 1 for AruCo board creation, 2 for camera calibration, 3 for pose estimation, 5 for carving, 6 for predefined benchmarking}"
-		"{resize        | 1.0   | Resize the image preview during calibration by this factor}"
+		"{resize        | 1.0   | Resize the image preview during calibration by this factor (for very high/low res cameras)}"
 		"{live          | true  | Whether to use live camera calibration, otherwise images will be taken from ../Data/calib_%02d.jpg}"
 		"{images        |       | Give the path to the directory containing the images for pose estimation/carving}"
-		"{calibration   |       | Give the path to the result of the camera calibration (eg. kinect_v1.txt)}"
+		"{calibration   |       | Give the path to the result of the camera calibration (eg. kinect_v1.yml)}"
 		"{video_id      | -1    | Give the id to the video stream for which you want to estimate the pose}"
 		"{carve         | 1     | 1 for standard carving, 2 for fast carving}"
 		"{masks         |       | Give the path to the directory containing the image masks}"
@@ -40,6 +40,7 @@ namespace {
 
 int main(int argc, char* argv[])
 {
+	// generate folders within build directory
 	std::filesystem::create_directories("./out");
 	std::filesystem::create_directories("./out/tmp");
 	std::filesystem::create_directories("./out/intermediate");
@@ -50,36 +51,38 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 	int choose = parser.get<int>("c");
-	//std::cout << "test" << choose << std::endl;
-	switch (choose) {
-	case 1: {
+
+	switch (choose) { // entry point for all parts of the program
+	case 1: { // generate a charuco board and save it as an image file (print on paper to use for camera calibration and pose estimation)
 		Calibration cal{};
 		cal.createBoard("out/BoardImage.jpg");
 		break;
 	}
-	case 2:
+	case 2:	// calibrate the camera, i.e. generate intrinsics for a specific camera needed to remove distortions when processing images during voxel carving
 	{
-		try
-		{
-			String xxx = parser.get<String>("live");
-		}
-		catch (const std::exception& e)
-		{
-			std::cout << e.what() << std::endl;
-		}
-
+		// whether the calibration should be performed 
+		// live: taking pictures using the default connected webcam
+		// in post: using pictures from a specified folder
 		bool liveCalibration = parser.get<bool>("live");
 
 		Calibration cal{};
+		std::string image_dir = "./out/tmp";
 		cal.createBoard();
-		cal.resizeFactor = 2;
-		vector<int> excludedImages;
+		cal.resizeFactor = parser.get<float>("resize"); // resize factor for shown images during the calibration process
+		if (!liveCalibration) {
+			image_dir = parser.get<std::string>("images"); // path to images to be used for calibration
+			if (image_dir.empty()) {
+				std::cerr << "You need to define an images path (--images)" << std::endl;
+				break;
+			}
+		}
+		vector<int> excludedImages;	// images that have been excluded from calibration by the user
 		bool calibrating = true;
 		bool firstCalibration = true;
-		if (!liveCalibration) cal.resizeFactor = parser.get<float>("resize");
 		do {
-			cal.calibrate(excludedImages, liveCalibration, !firstCalibration, "../Data/calib_%02d.jpg");
-			liveCalibration = false;
+			cal.calibrate(excludedImages, liveCalibration, firstCalibration, image_dir);
+			firstCalibration = false;
+			liveCalibration = false; //images can only be taken live during the first iteration of calibration
 			string input;
 			std::cout << "Enter ids of images to exclude, then enter y to repeat calibration. Use l to list current exclusions or n to exit" << std::endl;
 			while (true) {
@@ -112,10 +115,6 @@ int main(int argc, char* argv[])
 						}
 						std::cout << std::endl;
 					}
-					else if (input.size() > 0 && input.at(0) == 'x') { // exit calibration
-						liveCalibration = true;
-						break;
-					}
 					else { // continue calibration loop with exclusions
 						break;
 					}
@@ -124,13 +123,15 @@ int main(int argc, char* argv[])
 		} while (calibrating);
 	}
 	break;
-	case 3:
+	case 3: // pose estimation
 	{
 		cv::Mat camera_matrix, dist_Coeffs;
+		// use calibration file generated previously (-c=2)
 		loadCalibrationFile(parser.get<std::string>("calibration"), &camera_matrix, &dist_Coeffs);
 		std::cout << camera_matrix << dist_Coeffs << std::endl;
 
 		// Determine whether to run with images or a video stream
+		// Pose estimation is then performed for each individual image/frame
 		if (parser.get<std::string>("video_id").empty()) {
 			std::string image_dir = parser.get<std::string>("images");
 			if (image_dir.empty()) {
@@ -153,37 +154,36 @@ int main(int argc, char* argv[])
 				cv::Mat image;
 				inputVideo.retrieve(image);
 				cv::Mat transformation_matrix = estimatePoseFromImage(camera_matrix, dist_Coeffs, image, true);
-				//std::cout << transformation_matrix << std::endl;
 			}
 		}
 	}
 	break;
-	case 4:
+	case 4: // image segmentation
 	{
 		cv::VideoCapture inputVideo;
 		inputVideo.open(parser.get<int>("video_id"));
 		while (inputVideo.grab()) {
 			cv::Mat image;
 			inputVideo.retrieve(image);
-			//cv::Mat segmentation_map = kmeans_segmentation(image);
-			cv::Mat mask = color_segmentation(image);
+			cv::Mat mask = color_segmentation(image); //segmentation based on color range
 			cv::Mat segmentated_img;
 			image.copyTo(segmentated_img, mask);
 			imshow("mask", mask);
 			imshow("source", image);
 			imshow("segmentation", segmentated_img);
 			char key = (char)waitKey(1);
-			//std::cout << transformation_matrix << std::endl;
 		}
 	}
 	break;
-	case 5:
+	case 5: // voxel carving
 	{
 		int carveArg = parser.get<int>("carve");
 		if (carveArg < 1 || 2 < carveArg) {
 			std::cerr << "Invalid carve argument.";
 			break;
 		}
+		// we read both images and masks for voxel carving
+		// the masks are used for the actual carving, the images allow us to reconstruct color
 		std::string image_dir = parser.get<std::string>("images");
 		if (image_dir.empty()) {
 			std::cerr << "You need to define a images path (--images)" << std::endl;
@@ -203,12 +203,13 @@ int main(int argc, char* argv[])
 
 		std::cout << "LOG - VC: images read." << std::endl;
 
+		// masks for the images must have been previously generated using image segmentation (-c=4)
 		std::string masks_dir = parser.get<std::string>("masks");
 		if (masks_dir.empty()) {
 			std::cerr << "You need to define a image masks path (--masks)" << std::endl;
 			break;
 		}
-
+		
 		std::vector<std::string> mask_filenames;
 		cv::glob(masks_dir, mask_filenames);
 		std::vector<cv::Mat> masks;
@@ -247,7 +248,7 @@ int main(int argc, char* argv[])
 			break;
 		}
 		loadCalibrationFile(parser.get<std::string>("calibration"), &cameraMatrix, &distCoeffs);
-		std::cout << "LOG - VC: read carmeraMatrix and distCoefficients." << std::endl;
+		std::cout << "LOG - VC: read cameraMatrix and distCoefficients." << std::endl;
 
 		// carve
 		switch (carveArg)
@@ -270,16 +271,14 @@ int main(int argc, char* argv[])
 
 		switch (color)
 		{
-			case 0:
-				break;
-			//case 1: reconstructColor(cameraMatrix, distCoeffs, model, images, masks);
-			//	break;
-			case 1: reconstructClosestColor(cameraMatrix, distCoeffs, model, images, masks);
-				break;
-			case 2: reconstructAvgColor(cameraMatrix, distCoeffs, model, images, masks);
-				break;
-			default:
-				std::cerr << "Ups, something went wrong!" << std::endl;
+		case 0:
+			break;
+		case 1: reconstructClosestColor(cameraMatrix, distCoeffs, model, images, masks);
+			break;
+		case 2: reconstructAvgColor(cameraMatrix, distCoeffs, model, images, masks);
+			break;
+		default:
+			std::cerr << "Ups, something went wrong!" << std::endl;
 		}
 
 		//apply postprocessing
@@ -298,14 +297,14 @@ int main(int argc, char* argv[])
 		marchingCubes(&model, parser.get<float>("scale"), modelTranslation, 0.5f, parser.get<std::string>("outFile"));
 	}
 	break;
-	case 6:
+	case 6: // benchmarking, shows runtime of individual steps of the program (segmentation, voxel carving, post-processing)
 	{
 		std::string image_dir = parser.get<std::string>("images");
 		if (image_dir.empty()) {
 			std::cerr << "You need to define a images path (--images)" << std::endl;
 			break;
 		}
-		
+
 		std::vector<std::string> image_filenames;
 		cv::glob(image_dir, image_filenames);
 		std::vector<cv::Mat> images;
@@ -337,7 +336,7 @@ int main(int argc, char* argv[])
 			break;
 		}
 		loadCalibrationFile(parser.get<std::string>("calibration"), &cameraMatrix, &distCoeffs);
-		std::cout << "LOG - Benchmark: read carmeraMatrix and distCoefficients." << std::endl;
+		std::cout << "LOG - Benchmark: read cameraMatrix and distCoefficients." << std::endl;
 
 		std::filesystem::create_directories("./out/bench");
 		// perform benchmarks here

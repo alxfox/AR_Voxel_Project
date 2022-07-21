@@ -71,7 +71,6 @@ public:
 	The board generated is used for following calibrations
 	*/
 	bool refindStrategy = false; // whether to refine the charuco marker search
-	bool showChessboardCorners = false;
 	float resizeFactor = 1; //resize image preview (to downsize high-resolution images)
 	String tmpFolder = "./out/tmp/";
 	int createBoard(String targetFile = "", int squaresX = 5, int squaresY = 7, float squareLength = 0.04, float markerLength = 0.02, int dictionaryId = 10) {
@@ -89,18 +88,22 @@ public:
 		return 0;
 	}
 	Calibration() {
-		
+
 	}
-	int calibrate(vector<int>& excludedImages, bool captureLive, bool skipUserPrompt = false, String imageLocation = "./out/tmp/calib_%03d.jpg", int camId = 0) {//"../Data/calib_%02d.jpg"
+	int calibrate(vector<int>& excludedImages, bool captureLive, bool firstCalibration, String imageLocation = "./out/tmp/calib_%03d.jpg", int camId = 0) {//"../Data/calib_%02d.jpg"
 		if (!hasBoard) {
 			cerr << "no charuco board has been defined to be used for calibration";
 			return 0;
 		}
+		std::cout << imageLocation << std::endl;
+		bool skipUserPrompt = false;
 		int calibrationFlags = 0;
 		float aspectRatio = 1;
 		Ptr<aruco::DetectorParameters> detectorParams = aruco::DetectorParameters::create();
 
 		VideoCapture inputVideo;
+		std::vector<cv::Mat> images;
+		std::vector<std::string> imagesFilenames;
 		int waitTime;
 		if (captureLive) {
 			inputVideo.open(camId);
@@ -110,7 +113,11 @@ public:
 				std::filesystem::remove_all(entry.path());
 		}
 		else {
-			inputVideo.open(imageLocation);
+			cv::glob(imageLocation, imagesFilenames);
+			for (int i = 0; i < imagesFilenames.size(); i++) {
+				images.push_back(cv::imread(imagesFilenames[i], 1));
+			}
+			//inputVideo.open(imageLocation);
 			waitTime = 0;
 		}
 
@@ -120,12 +127,21 @@ public:
 		vector< Mat > allImgs;
 		Size imgSize;
 		int imageIndex = 0;
-		while (inputVideo.grab()) {
-			bool addImageData = false; // whether to include current image's data in calibration
+
+		while (true) {
 			Mat image, imageCopy;
-			inputVideo.retrieve(image);
-			Mat imag;
-			//cv::resize(image, imag, (0, 0), fx = 0.5, fy = 0.5);
+			// get current image from camera stream/image folder
+			if (captureLive) {
+				if (!inputVideo.grab()) break;
+				inputVideo.retrieve(image);
+			}
+			else {
+				while (std::find(excludedImages.begin(), excludedImages.end(), imageIndex) != excludedImages.end()) imageIndex++;
+				if (imageIndex >= images.size()) break;
+				image = images[imageIndex];
+			}
+
+			bool addImageData = false; // whether to include current image's data in calibration
 			vector< int > ids;
 			vector< vector< Point2f > > corners, rejected;
 
@@ -140,16 +156,16 @@ public:
 			if (ids.size() > 0)
 				aruco::interpolateCornersCharuco(corners, ids, image, charucoboard, currentCharucoCorners,
 					currentCharucoIds);
-			// draw results
+			// draw results (highlight markers)
 			image.copyTo(imageCopy);
 			if (ids.size() > 0) aruco::drawDetectedMarkers(imageCopy, corners);
 
 			if (currentCharucoCorners.total() > 0)
 				aruco::drawDetectedCornersCharuco(imageCopy, currentCharucoCorners, currentCharucoIds);
-			if (skipUserPrompt && !captureLive) {
+			if (skipUserPrompt && !captureLive) { // once skipUserPrompt==true, accept all images
 				addImageData = true;
 			}
-			else if (excludedImages.size() == 0) // if no excludedImages are provided, prompt user
+			else if (firstCalibration) // during initial calibration, prompt user for each image
 			{
 				Mat resizedImage;
 				cv::resize(imageCopy, resizedImage, cv::Size(), resizeFactor, resizeFactor);
@@ -172,26 +188,28 @@ public:
 					addImageData = true;
 				}
 			}
-			else if (std::find(excludedImages.begin(), excludedImages.end(), imageIndex) == excludedImages.end() && ids.size() > 0) //if image is not excluded, add the data
+			else if (std::find(excludedImages.begin(), excludedImages.end(), imageIndex) == excludedImages.end() && ids.size() > 0) // if image is not excluded, add it for calibration
 			{
 				cout << "Frame captured (" << imageIndex << ")" << endl;
 				addImageData = true;
 			}
 
 			if (addImageData && ids.size() > 0) {
-				if (captureLive) {
+				//save data from accepted images for usage in calibration
+				if (captureLive) {//images taken during live capture are saved to tmp so they can later be excluded by the user
 					stringstream path;
 					path << tmpFolder << "calib_" << std::setfill('0') << std::setw(3) << liveImageCount << ".jpg";
+					imagesFilenames.push_back(path.str());
 					imwrite(path.str(), image);
-					stringstream pathMarked;
-					pathMarked << tmpFolder << "calib_m_" << std::setfill('0') << std::setw(3) << liveImageCount << ".jpg";
-					imwrite(pathMarked.str(), imageCopy);
 					liveImageCount++;
 				}
 				allCorners.push_back(corners);
 				allIds.push_back(ids);
 				allImgs.push_back(image);
 				imgSize = image.size();
+			}
+			if(!addImageData && !captureLive) {//when doing non-live initial calibration, skipped images are added to the exclusion list
+				excludedImages.push_back(imageIndex);
 			}
 			imageIndex++;
 		}
@@ -254,20 +272,18 @@ public:
 			return 0;
 		}
 
-		// calibrate camera using charuco
+		// calibrate camera using charuco and calculate reprojection error
 		Mat stdDeviationIn, stdDeviationOut, individualRepErrors;
-
 		repError =
 			aruco::calibrateCameraCharuco(allCharucoCorners, allCharucoIds, charucoboard, imgSize,
 				cameraMatrix, distCoeffs, rvecs, tvecs, stdDeviationIn, stdDeviationOut, individualRepErrors, calibrationFlags);
 
 		int offset = 0;
 		for (size_t i = 0; i < individualRepErrors.rows; i++)
-		{
-			if (std::find(excludedImages.begin(), excludedImages.end(), i) != excludedImages.end())offset++; // to ensure the labels for the images are correct, exclude the images that were not used
-			std::cout << i + offset << ": " << individualRepErrors.row(i) << std::endl;
+		{	// output used image files to console along with their individual reprojection error
+			while (std::find(excludedImages.begin(), excludedImages.end(), i+offset) != excludedImages.end())offset++; // to ensure the labels for the images are correct, exclude the images that were not used
+			std::cout << i + offset << ":\t" << individualRepErrors.row(i) << "\t" << imagesFilenames[i+offset] << std::endl;
 		}
-		//std::cout << individualRepErrors << std::endl;
 
 
 		bool saveOk = saveCameraParams(outputFile, imgSize, aspectRatio, calibrationFlags,
@@ -280,24 +296,6 @@ public:
 		cout << "Rep Error: " << repError << endl;
 		cout << "Rep Error Aruco: " << arucoRepErr << endl;
 		cout << "Calibration saved to " << outputFile << endl;
-
-		// show interpolated charuco corners for debugging
-		if (showChessboardCorners) {
-			for (unsigned int frame = 0; frame < filteredImages.size(); frame++) {
-				Mat imageCopy = filteredImages[frame].clone();
-				if (allIds[frame].size() > 0) {
-
-					if (allCharucoCorners[frame].total() > 0) {
-						aruco::drawDetectedCornersCharuco(imageCopy, allCharucoCorners[frame],
-							allCharucoIds[frame]);
-					}
-				}
-
-				imshow("out", imageCopy);
-				char key = (char)waitKey(0);
-				if (key == 27) break;
-			}
-		}
 		return 0;
 	}
 };
