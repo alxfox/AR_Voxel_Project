@@ -67,7 +67,7 @@
 
 using Eigen::Vector4f;
 
-typedef struct DCLR {
+struct DCLR {
 	Vector4f color;
 	float depth;
 };

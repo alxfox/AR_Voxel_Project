@@ -51,7 +51,7 @@ the use of this software, even if advised of the possibility of such damage.
 */
 
 using namespace std;
-using namespace cv;
+//using namespace cv;
 /**
 	Class for camera calibration using charuco boards.
 	A live video stream or a series of images or a video file may be used for calibration
@@ -59,9 +59,9 @@ using namespace cv;
 class Calibration {
 private:
 	string outputFile = "out/cameraration.yml";
-	Ptr<aruco::Dictionary> dictionary;
-	Ptr<aruco::CharucoBoard> charucoboard;
-	Ptr<aruco::Board> board;
+    cv::Ptr<cv::aruco::Dictionary> dictionary;
+	cv::Ptr<cv::aruco::CharucoBoard> charucoboard;
+    cv::Ptr<cv::aruco::Board> board;
 	bool hasBoard = false;
 	int liveImageCount = 0; // track how many images have been taken so far during live calibration
 public:
@@ -72,12 +72,12 @@ public:
 	*/
 	bool refindStrategy = false; // whether to refine the charuco marker search
 	float resizeFactor = 1; //resize image preview (to downsize high-resolution images)
-	String tmpFolder = "./out/tmp/";
-	int createBoard(String targetFile = "", int squaresX = 5, int squaresY = 7, float squareLength = 0.04, float markerLength = 0.02, int dictionaryId = 10) {
-		dictionary = aruco::getPredefinedDictionary(aruco::PREDEFINED_DICTIONARY_NAME(dictionaryId));
+    cv::String tmpFolder = "./out/tmp/";
+	int createBoard(cv::String targetFile = "", int squaresX = 5, int squaresY = 7, float squareLength = 0.04, float markerLength = 0.02, int dictionaryId = 10) {
+		dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::PREDEFINED_DICTIONARY_NAME(dictionaryId));
 
-		charucoboard = aruco::CharucoBoard::create(squaresX, squaresY, squareLength, markerLength, dictionary);
-		board = charucoboard.staticCast<aruco::Board>();
+		charucoboard = cv::aruco::CharucoBoard::create(squaresX, squaresY, squareLength, markerLength, dictionary);
+		board = charucoboard.staticCast<cv::aruco::Board>();
 		if (!targetFile.empty()) {
 			cv::Mat boardImage;
 			charucoboard->draw(cv::Size(2490, 3510), boardImage, 10, 1);
@@ -92,7 +92,7 @@ public:
 	}
 	Calibration() {
 	}
-	int calibrate(vector<int>& excludedImages, bool captureLive, bool firstCalibration, String imageLocation = "./out/tmp/calib_%03d.jpg", int camId = 0) {//"../Data/calib_%02d.jpg"
+	int calibrate(vector<int>& excludedImages, bool captureLive, bool firstCalibration, cv::String imageLocation = "./out/tmp/calib_%03d.jpg", int camId = 0) {//"../Data/calib_%02d.jpg"
 		if (!hasBoard) {
 			cerr << "no charuco board has been defined to be used for calibration";
 			return 0;
@@ -100,9 +100,9 @@ public:
 		bool skipUserPrompt = false;
 		int calibrationFlags = 0;
 		float aspectRatio = 1;
-		Ptr<aruco::DetectorParameters> detectorParams = aruco::DetectorParameters::create();
+        cv::Ptr<cv::aruco::DetectorParameters> detectorParams = cv::aruco::DetectorParameters::create();
 
-		VideoCapture inputVideo;
+        cv::VideoCapture inputVideo;
 		std::vector<cv::Mat> images;
 		std::vector<std::string> imagesFilenames;
 		int waitTime;
@@ -123,14 +123,14 @@ public:
 		}
 
 		// collect data from each frame
-		vector< vector< vector< Point2f > > > allCorners;
+		vector< vector< vector< cv::Point2f > > > allCorners;
 		vector< vector< int > > allIds;
-		vector< Mat > allImgs;
-		Size imgSize;
+		vector< cv::Mat > allImgs;
+        cv::Size imgSize;
 		int imageIndex = 0;
 
 		while (true) {
-			Mat image, imageCopy;
+            cv::Mat image, imageCopy;
 			// get current image from camera stream/image folder
 			if (captureLive) {
 				if (!inputVideo.grab()) break;
@@ -144,36 +144,36 @@ public:
 
 			bool addImageData = false; // whether to include current image's data in calibration
 			vector< int > ids;
-			vector< vector< Point2f > > corners, rejected;
+			vector< vector< cv::Point2f > > corners, rejected;
 
 			// detect markers
-			aruco::detectMarkers(image, dictionary, corners, ids, detectorParams, rejected);
+            cv::aruco::detectMarkers(image, dictionary, corners, ids, detectorParams, rejected);
 
 			// refind strategy to detect more markers
-			if (refindStrategy) aruco::refineDetectedMarkers(image, board, corners, ids, rejected);
+			if (refindStrategy) cv::aruco::refineDetectedMarkers(image, board, corners, ids, rejected);
 
 			// interpolate charuco corners
-			Mat currentCharucoCorners, currentCharucoIds;
+            cv::Mat currentCharucoCorners, currentCharucoIds;
 			if (ids.size() > 0)
-				aruco::interpolateCornersCharuco(corners, ids, image, charucoboard, currentCharucoCorners,
+                cv::aruco::interpolateCornersCharuco(corners, ids, image, charucoboard, currentCharucoCorners,
 					currentCharucoIds);
 			// draw results (highlight markers)
 			image.copyTo(imageCopy);
-			if (ids.size() > 0) aruco::drawDetectedMarkers(imageCopy, corners);
+			if (ids.size() > 0) cv::aruco::drawDetectedMarkers(imageCopy, corners);
 
 			if (currentCharucoCorners.total() > 0)
-				aruco::drawDetectedCornersCharuco(imageCopy, currentCharucoCorners, currentCharucoIds);
+                cv::aruco::drawDetectedCornersCharuco(imageCopy, currentCharucoCorners, currentCharucoIds);
 			if (skipUserPrompt && !captureLive) { // once skipUserPrompt==true, accept all images
 				addImageData = true;
 			}
 			else if (firstCalibration) // during initial calibration, prompt user for each image
 			{
-				Mat resizedImage;
+                cv::Mat resizedImage;
 				cv::resize(imageCopy, resizedImage, cv::Size(), resizeFactor, resizeFactor);
 				putText(resizedImage, "Press 'c' to add current frame, 'a' to add all. 'ESC' to finish and calibrate",
-					Point(10, 20), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(255, 0, 0), 2);
+                        cv::Point(10, 20), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 0, 0), 2);
 				imshow("out", resizedImage);
-				char key = (char)waitKey(waitTime);
+				char key = (char) cv::waitKey(waitTime);
 				if (key == 27) break;
 				if (key == 'c') {
 					if (ids.size() > 0) {
@@ -220,17 +220,17 @@ public:
 			return 0;
 		}
 
-		Mat cameraMatrix, distCoeffs;
-		vector< Mat > rvecs, tvecs;
+        cv::Mat cameraMatrix, distCoeffs;
+		vector< cv::Mat > rvecs, tvecs;
 		double repError;
 
-		if (calibrationFlags & CALIB_FIX_ASPECT_RATIO) {
-			cameraMatrix = Mat::eye(3, 3, CV_64F);
+		if (calibrationFlags & cv::CALIB_FIX_ASPECT_RATIO) {
+			cameraMatrix = cv::Mat::eye(3, 3, CV_64F);
 			cameraMatrix.at< double >(0, 0) = aspectRatio;
 		}
 
 		// prepare data for calibration
-		vector< vector< Point2f > > allCornersConcatenated;
+		vector< vector< cv::Point2f > > allCornersConcatenated;
 		vector< int > allIdsConcatenated;
 		vector< int > markerCounterPerFrame;
 		markerCounterPerFrame.reserve(allCorners.size());
@@ -244,22 +244,22 @@ public:
 
 		// calibrate camera using aruco markers
 		double arucoRepErr;
-		arucoRepErr = aruco::calibrateCameraAruco(allCornersConcatenated, allIdsConcatenated,
+		arucoRepErr = cv::aruco::calibrateCameraAruco(allCornersConcatenated, allIdsConcatenated,
 			markerCounterPerFrame, board, imgSize, cameraMatrix,
-			distCoeffs, noArray(), noArray(), calibrationFlags);
+			distCoeffs, cv::noArray(), cv::noArray(), calibrationFlags);
 
 		// prepare data for charuco calibration
 		int nFrames = (int)allCorners.size();
-		vector< Mat > allCharucoCorners;
-		vector< Mat > allCharucoIds;
-		vector< Mat > filteredImages;
+		vector< cv::Mat > allCharucoCorners;
+		vector< cv::Mat > allCharucoIds;
+		vector< cv::Mat > filteredImages;
 		allCharucoCorners.reserve(nFrames);
 		allCharucoIds.reserve(nFrames);
 
 		for (int i = 0; i < nFrames; i++) {
 			// interpolate using camera parameters
-			Mat currentCharucoCorners, currentCharucoIds;
-			aruco::interpolateCornersCharuco(allCorners[i], allIds[i], allImgs[i], charucoboard,
+            cv::Mat currentCharucoCorners, currentCharucoIds;
+            cv::aruco::interpolateCornersCharuco(allCorners[i], allIds[i], allImgs[i], charucoboard,
 				currentCharucoCorners, currentCharucoIds, cameraMatrix,
 				distCoeffs);
 
@@ -274,9 +274,9 @@ public:
 		}
 
 		// calibrate camera using charuco and calculate reprojection error
-		Mat stdDeviationIn, stdDeviationOut, individualRepErrors;
+        cv::Mat stdDeviationIn, stdDeviationOut, individualRepErrors;
 		repError =
-			aruco::calibrateCameraCharuco(allCharucoCorners, allCharucoIds, charucoboard, imgSize,
+            cv::aruco::calibrateCameraCharuco(allCharucoCorners, allCharucoIds, charucoboard, imgSize,
 				cameraMatrix, distCoeffs, rvecs, tvecs, stdDeviationIn, stdDeviationOut, individualRepErrors, calibrationFlags);
 
 		int offset = 0;
