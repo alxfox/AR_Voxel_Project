@@ -9,10 +9,10 @@
 /**
  * @brief This function performs a projection from world to camera coordinates.
  *
- * @param world         homogenous world coordinates
+ * @param world         homogeneous world coordinates
  * @param pose          pose transformation
  * @param intr          camera intrinsics
- * @return cv::Vec3f    homogenous camera coordinates
+ * @return cv::Vec3f    homogeneous camera coordinates
  */
 static cv::Vec3f worldToCamera(cv::Vec4f world, cv::Mat& pose, cv::Mat& intr) {
     cv::Mat1f proj = intr * pose * world;
@@ -24,7 +24,7 @@ void reconstructClosestColor(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& 
     Benchmark::GetInstance().LogColoring(true);
     int x = 0, y = 0, z = 0;
     voxel_pass(x, y, z, cameraMatrix, distCoeffs, model, images, masks)
-    {   
+    {
         std::vector<DCLR> colors = model.getColors(x, y, z);
         if (colors.size() == 0) {
             continue;

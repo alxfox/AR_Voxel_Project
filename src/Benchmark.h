@@ -53,7 +53,7 @@ public:
 
 	/**
 	* @brief Method to access singleton instance (with lazy initialization)
-	* 
+	*
 	* @return Benchmark	the singleton instance
 	*/
 	static Benchmark& GetInstance() {
@@ -64,7 +64,7 @@ public:
 
 	/**
 	* @brief Method to start a new benchmarking run
-	* 
+	*
 	* @runName		name or short description of new run
 	* @modelSize	dimensions and voxel size of model used in new run
 	*/
@@ -80,7 +80,7 @@ public:
 
 	/**
 	* @brief Method to log carving time for current run
-	* 
+	*
 	* @param start	whether carving time starts or ends
 	*/
 	void LogCarving(bool start) {
@@ -124,8 +124,8 @@ public:
 	}
 
 	/**
-	* @brief Method to generate std::string representation of benchmarking since programm start
-	* 
+	* @brief Method to generate std::string representation of benchmarking since program start
+	*
 	* @return std::string	output string of benchmark
 	*/
 	std::string to_string() {

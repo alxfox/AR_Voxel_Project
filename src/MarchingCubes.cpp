@@ -32,7 +32,7 @@ bool marchingCubes(Model* model, float scale, Vector3f translation, float thresh
 
 /**
 * @brief Function for testing marching cubes
-* 
+*
 * @return bool	whether the mesh was written successfully
 */
 bool testMarchingCubes() {

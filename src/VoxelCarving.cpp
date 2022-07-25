@@ -10,10 +10,10 @@
 /**
  * @brief This function performs a projection from world to camera coordinates.
  *
- * @param world         homogenous world coordinates
+ * @param world         homogeneous world coordinates
  * @param pose          pose transformation
  * @param intr          camera intrinsics
- * @return cv::Vec3f    homogenous camera coordinates
+ * @return cv::Vec3f    homogeneous camera coordinates
  */
 static cv::Vec3f worldToCamera(cv::Vec4f world, cv::Mat& pose, cv::Mat& intr) {
     cv::Mat1f proj = intr * pose * world;
@@ -60,7 +60,7 @@ static void carve(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, cv::
 void carve(cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Model& model, std::vector<cv::Mat>& images, std::vector<cv::Mat>& masks, bool intermediateMeshes) {
     std::cout << "LOG - VC: starting carving process (version 1)." << std::endl;
     Benchmark::GetInstance().LogCarving(true);
-    for (int i = 0; i < images.size(); i++) { // carve each frame seperately
+    for (int i = 0; i < images.size(); i++) { // carve each frame separately
         carve(cameraMatrix, distCoeffs, model, images[i], masks[i]);
         if (intermediateMeshes) {
             std::cout << "LOG - VC: generating intermediate mesh for image " << i << std::endl;
