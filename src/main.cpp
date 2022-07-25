@@ -177,7 +177,7 @@ int main(int argc, char* argv[])
 			imshow("mask", mask);
 			imshow("source", image);
 			imshow("segmentation", segmentated_img);
-			char key = (char)waitKey(1);
+			char key = (char) cv::waitKey(1);
 		}
 	}
 	break;
