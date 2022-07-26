@@ -8,10 +8,6 @@ inline cv::Mat color_segmentation(cv::Mat Input){
 
     cv::Mat mask;
     inRange(rgb_img, cv::Scalar(120, 120, 120), cv::Scalar(255, 255, 255), mask);
-
-    //cv::Mat segmentation_map;
-    //bitwise_not(mask, segmentation_map);
-    //return segmentation_map;
     return ~mask;
 }
 

@@ -225,7 +225,17 @@ The final data is saved to a .yml file that can be specified using -calibration
 $ ./voxel_project.exe -c=3
 ----
 
-`TODO`
+This option provides you with two methods for semantic segmentation: Color segmentation and k-means segmentation. Kmeans image segmentation does not require you to set any hyperparameters. Color segmentation requires you to set scene specific color masks in `Segmentation.h` of the style:
+[source,shell]
+----
+$ cv::Mat mask;
+$ inRange(rgb_img, cv::Scalar(120, 120, 120), cv::Scalar(255, 255, 255), mask);
+----
+
+Multiple masks can be concatenated `mask1 + mask2` and masks can be inverted `~mask`.
+
+==== Image Segmentation using Deep Neural Networks & Python
+Additionally, it is possible to use the pretrained Mask R-CNN implementation of Pytorch to perform image segmentation. Please, refer to `capture_and_segment_images.py`. You need to give the dataset you capture a unique name (`--dataset_name`) and set the id of your camera (`--video_id`).
 
 === Carve your own model
 
