@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 	}
 	case 2:	// calibrate the camera, i.e. generate intrinsics for a specific camera needed to remove distortions when processing images during voxel carving
 	{
-		// whether the calibration should be performed 
+		// whether the calibration should be performed
 		// live: taking pictures using the default connected webcam
 		// in post: using pictures from a specified folder
 		bool liveCalibration = parser.get<bool>("live");
@@ -197,7 +197,7 @@ int main(int argc, char* argv[])
 		}
 
 		if (parser.get<float>("scale") == 0) {
-			std::cerr << "The programm won't compute stuff for fun! Enter a scale != 0.0" << std::endl;
+			std::cerr << "The program won't compute stuff for fun! Enter a scale != 0.0" << std::endl;
 		}
 
 		std::vector<std::string> image_filenames;
@@ -215,7 +215,7 @@ int main(int argc, char* argv[])
 			std::cerr << "You need to define a image masks path (--masks)" << std::endl;
 			break;
 		}
-		
+
 		std::vector<std::string> mask_filenames;
 		cv::glob(masks_dir, mask_filenames);
 		std::vector<cv::Mat> masks;

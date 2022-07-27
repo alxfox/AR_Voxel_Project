@@ -3,9 +3,9 @@
 #include <iostream>
 
 /**
- * @brief This function reads the 
- * 
- * @param calibrration_file_path File path to 
+ * @brief This function reads the
+ *
+ * @param calibrration_file_path File path to
  * @return cv::Mat the intrinsic matrix as well as the distortion coefficients
  */
 static inline void loadCalibrationFile(std::string calibration_file_path, cv::Mat *cameraMatrix, cv::Mat *distCoeffs){
@@ -24,7 +24,7 @@ static cv::Mat estimatePoseFromImage(cv::Mat cameraMatrix, cv::Mat distCoeffs, c
     cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
     cv::Ptr<cv::aruco::CharucoBoard> board = cv::aruco::CharucoBoard::create(5, 7, 0.04f, 0.02f, dictionary);
     cv::Ptr<cv::aruco::DetectorParameters> params = cv::aruco::DetectorParameters::create();
-    
+
     // Detect the markers in the image
     std::vector<int> markerIds;
     std::vector<std::vector<cv::Point2f> > markerCorners;

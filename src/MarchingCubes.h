@@ -469,7 +469,7 @@ static MC_Interpolate VertexInterp(float threshold, const Vector3f& point0, cons
 
 /**
 * @brief Converts a voxel into a triangle mesh based on a threshold
-* 
+*
 * @param cell		cell representation of the voxel
 * @param threshold	the threshold
 * @param triangles	triangle mesh container to be written to
@@ -520,7 +520,7 @@ static int Polygonise(const MC_Gridcell& cell, float threshold, MC_Triangle* tri
 
 /**
 * @brief This function processes a single voxel of the model to convert it into a mesh
-* 
+*
 * @param model		the model
 * @param x			x-coordinate of voxel base point in the model
 * @param y			y-coordinate of voxel base point in the model
@@ -585,13 +585,13 @@ static bool ProcessVoxel(Model* model, int x, int y, int z, SimpleMesh* mesh, fl
 
 /**
 * @brief This function performs marching cubes on the given model and writes the resulting mesh to a file.
-* 
+*
 * @param model			the model to be processed
 * @param scale			scaling factor to be applied on the result mesh
 * @param translation	translation vector to be applied on the resulting mesh
 * @param threshold		threshold determining down to what w()-value a point will be considered part of the model
 * @param outFileName	name of the output file the mesh will be written to
-* @return bool			whether the mesh was written successfully 
+* @return bool			whether the mesh was written successfully
 */
 bool marchingCubes(Model* model, float scale = 1.0f, Vector3f translation = Vector3f(0, 0, 0), float threshold = 0.5f, std::string outFileName = "out/mesh.off");
 
