@@ -20,11 +20,11 @@ Final project for "3D Scanning and Motion Capture" class in SS2022 at Technical 
 == Abstract
 `TODO`
 
+Our complete written report can be found https://github.com/alxfox/AR_Voxel_Project/tree/master/Documents/Presentation[here].
+
+video::HQ55-yuWROQ[youtube]
+
 == Setup
-
-Install https://eigen.tuxfamily.org/index.php?title=Main_Page[Eigen] (Version 3.4).
-
-Install https://docs.opencv.org/3.4/d3/d52/tutorial_windows_install.html[OpenCV Library] (Visual Studio 2019 VC16).
 
 === Clone the repository
 
