@@ -20,9 +20,7 @@ Final project for "3D Scanning and Motion Capture" class in SS2022 at Technical 
 == Abstract
 `TODO`
 
-Our complete written report can be found https://github.com/alxfox/AR_Voxel_Project/tree/master/Documents/Presentation[here].
-
-video::HQ55-yuWROQ[youtube]
+Our complete written report can be found https://github.com/alxfox/AR_Voxel_Project/tree/master/Documents/Presentation.pdf[here]. Additionaly, this https://www.youtube.com/watch?v=HQ55-yuWROQ[Video] provides a great overview of this project.
 
 == Setup
 
