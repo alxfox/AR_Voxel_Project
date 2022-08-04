@@ -35,4 +35,5 @@
 
 Build/
 Data/*
-!Data/demo_material/
+!Data/box_dataset/
+!Data/human_dataset/
