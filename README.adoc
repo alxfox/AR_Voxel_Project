@@ -23,7 +23,7 @@ We present our implementation of this method with the goal of achieving a good e
 For pre-processing, we used pose estimation using the ChArUco markers set up in our scene, as well as different image segmentation methods. The voxel carving method is then used to extract a voxel representation of the mesh.
 Finally, post-processing is applied to both color our model according to the input, as well as improve the topology to achieve a convincing mesh.
 
-Our complete written report can be found https://github.com/alxfox/AR_Voxel_Project/tree/master/Documents/Presentation.pdf[here]. Additionaly, this https://www.youtube.com/watch?v=HQ55-yuWROQ[Video] provides a great overview of this project.
+Our complete written report can be found https://github.com/alxfox/AR_Voxel_Project/tree/master/Documents/Report.pdf[here]. Additionaly, this https://www.youtube.com/watch?v=HQ55-yuWROQ[Video] provides a great overview of this project.
 
 == Setup
 
