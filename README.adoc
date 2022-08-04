@@ -388,5 +388,30 @@ textexample <<aa>> text example <<bb>> te xt exam ple.
 [bibliography]
 == References
 
-* [[[aa,1]]] Resource 1
-* [[[bb,2]]] Resource 2
+* [[[aa,1]]] Kiriakos N Kutulakos and Steven M Seitz. A theory of shape by space carving. International
+journal of computer vision, 38(3):199–218, 2000.
+* [[[bb,2]]] Johannes Lutz Sch ̈onberger and Jan-Michael Frahm. Structure-from-motion revisited. In
+Conference on Computer Vision and Pattern Recognition (CVPR), 2016.
+* [[[cc,3]]] Alexander Schick and Rainer Stiefelhagen. Real-time gpu-based voxel carving with system-
+atic occlusion handling. In Joachim Denzler, Gunther Notni, and Herbert S ̈uße, editors,
+Pattern Recognition, pages 372–381, Berlin, Heidelberg, 2009. Springer Berlin Heidelberg.
+* [[[dd,4]]] G. Bradski. The OpenCV Library. Dr. Dobb’s Journal of Software Tools, 2000.
+* [[[ee,5]]] H. Kato and M. Billinghurst. Marker tracking and hmd calibration for a video-based aug-
+mented reality conferencing system. In Proceedings 2nd IEEE and ACM International Work-
+shop on Augmented Reality (IWAR’99), pages 85–94, 1999.
+* [[[ff,6]]] Kaiming He, Georgia Gkioxari, Piotr Dollar, and Ross Girshick. Mask r-cnn. In Proceedings
+of the IEEE International Conference on Computer Vision (ICCV), Oct 2017.
+* [[[gg,7]]] Kiriakos N. Kutulakos and Steven M. Seitz. A theory of shape by space carving. Interna-
+tional Journal of Computer Vision, 38(3):199–218, 2000.
+* [[[hh,8]]] Mathieu Gaillard, Chenyong Miao, James C Schnable, and Bedrich Benes. Voxel carving-
+based 3d reconstruction of sorghum identifies genetic determinants of light interception
+efficiency. Plant direct, 4(10):e00255, 2020.
+* [[[ii,9]]] William E. Lorensen and Harvey E. Cline. Marching cubes: a high resolution 3d surface
+construction algorithm. Seminal graphics, 1996.
+* [[[jj,10]]] Felix Wimbauer, Nan Yang, Lukas Von Stumberg, Niclas Zeller, and Daniel Cremers.
+Monorec: Semi-supervised dense reconstruction in dynamic environments from a single
+moving camera. In Proceedings of the IEEE/CVF Conference on Computer Vision and
+Pattern Recognition, pages 6112–6122, 2021.
+* [[[kk,11]]]  Adrian Broadhurst, Tom W Drummond, and Roberto Cipolla. A probabilistic framework
+for space carving. In Proceedings eighth IEEE international conference on computer vision.
+ICCV 2001, volume 1, pages 388–393. IEEE, 2001
