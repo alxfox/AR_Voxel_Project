@@ -379,12 +379,6 @@ a| Short description of the testcase
 | Time needed for complete reconstruction process (including output file writing and variable initializations, excluding image loading) (in milliseconds)
 
 |====
-
-
-`TODO`
-
-textexample <<aa>> text example <<bb>> te xt exam ple.
-
 [bibliography]
 == References
 
