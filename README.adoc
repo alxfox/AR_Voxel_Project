@@ -11,7 +11,7 @@
 
 :cmake_version: 3.9.1
 :git-bash_version: 2.14.1
-:opencv_version: 0.0
+:opencv_version: 4.6.0
 
 = {title}
 
@@ -20,11 +20,11 @@ Final project for "3D Scanning and Motion Capture" class in SS2022 at Technical 
 == Abstract
 `TODO`
 
+`Update following link from Presentation.pdf to report`
+
+Our complete written report can be found https://github.com/alxfox/AR_Voxel_Project/tree/master/Documents/Presentation.pdf[here]. Additionaly, this https://www.youtube.com/watch?v=HQ55-yuWROQ[Video] provides a great overview of this project.
+
 == Setup
-
-Install https://eigen.tuxfamily.org/index.php?title=Main_Page[Eigen] (Version 3.4).
-
-Install https://docs.opencv.org/3.4/d3/d52/tutorial_windows_install.html[OpenCV Library] (Visual Studio 2019 VC16).
 
 === Clone the repository
 
@@ -157,13 +157,13 @@ After compiling the project, you are ready to carve your first model.
 
 == Example
 
-The following example gives visualize the carved model of our demo object. If you want to reproduce our results, you can use https://github.com/alxfox/AR_Voxel_Project/tree/master/Data/demo_material[this] dataset. For comparison we also provide details about the configuration and the expected output meshes.
+The following example gives visualize the carved model of our demo object. If you want to reproduce our results, you can use https://github.com/alxfox/AR_Voxel_Project/tree/master/Data/box_dataset[this] dataset. For comparison we also provide details about the configuration and the expected output meshes.
 
 .Example Input Image (total of 8)
-image::Data/demo_material/images/image0000.jpg[600, 400, align="center"]
+image::Data/box_dataset/images/image0000.jpg[600, 400, align="center"]
 
 .Generated Model: post processing and color reconstruction (Method 2 - color averaging) applied.
-image::Data/demo_material/generated_models/3_solid.png[600, 400, align="center"]
+image::Data/box_dataset/generated_models/3_solid.png[600, 400, align="center"]
 
 == How to run?
 
@@ -256,15 +256,15 @@ This command will generate a new file `out/mesh.off` containing the mesh generat
 
 | -images="<images-dir>"
 | NonOptional
-| Directory of the input images e.g. `./Data/demo_material/images`.
+| Directory of the input images e.g. `./Data/box_dataset/images`.
 
 | -masks="<masks-dir>"
 | NonOptional
-| Directory of the masks e.g. `./Data/demo_material/masks`.
+| Directory of the masks e.g. `./Data/box_dataset/masks`.
 
 | -calibration="<cameracalibartion.yml-dir>"
 | NonOptional
-| Directory of the masks e.g. `./Data/demo_material/cameracalibration.yml`.
+| Directory of the masks e.g. `./Data/box_dataset/cameracalibration.yml`.
 
 | -carve=<carving-method>
 | 1
